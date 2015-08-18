@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	</head>
+
+	<body>
+	<svg id="chart">
+		<svg id="majorTitle"></svg>
+  		<svg id="premajor">
+  			<svg id="pre_gender" ></svg>
+  			<svg id="pre_limfit" style="display:none"></svg>
+  		</svg>
+  		<svg id="freshman" ></svg>
+  		<svg id="sophomore"></svg>
+  		<svg id="sopho_major">
+  			<svg id="sop_gender"></svg>
+  			<svg id="sop_limfit" style="display:none"></svg>
+  		</svg>
+  	</svg>
+  	<div style="position: absolute;left:15%;top:92%">
+  		<select id="pre_select">
+  			<option value="gender">Male/Female</option>
+  			<option value="fit">Good/Moderate/Bad</option>
+  		</select>
+  	</div>
+  	
+  	<div style="position: absolute;left:82%;top:92%">
+  		<select id="sop_select">
+  			<option value="gender">Male/Female</option>
+  			<option value="fit">Good/Moderate/Bad</option>
+  		</select>
+  	</div>
+  	
+  	
+  	
+  	
+  	<script>
+  		var activeColor; 
+  		
+  		var pre_department; 
+  		var sop_department; 
+  		
+  		var pre_gender;//contain each department gender information before go to college
+  		var sop_gender;//sophomore gender information
+  		
+  		var pre_major;
+  		var sop_major;
+  		
+  		var pre_major_imfit;
+  		var sop_major_imfit;
+
+  		var major_name;
+  		var department_name;
+  		
+  		var nums;//the number of data item.
+  		
+  		var margin = {top:40,
+  					 right:20,
+  					 bottom:30,
+  					 left:50},
+  			width = window.innerWidth - margin.right - margin.left,
+  			height = window.innerHeight - margin.top - margin.bottom;
+  		
+  		d3.select("#chart").attr("width", width)
+  			.attr("height", height);
+  		d3.text("data.csv", function(unparseData){
+  			var data = d3.csv.parseRows(unparseData);
+  			//intial the vis data.
+  			nums = dataInitialization(data);
+  			
+  			//pre major info
+  			var info = [];
+  			for(key in pre_gender){
+  				info.push(pre_gender[key]);
+  			}
+			var value = [];
+			for(key in pre_department){
+				value.push(pre_department[key]);
+			}
+  			
+  			drawDepartmentInfo("pre_gender", value, width*0.15, 0, info);
+  			info = [];
+  			for(key in pre_major_imfit){
+  				info.push(pre_major_imfit[key]);
+  			}
+  			drawDepartmentInfo("pre_limfit", value, width*0.15, 0, info);
+  			
+  			
+  			//sophomore info
+  			info = [];
+  			for(key in sop_gender){
+  				info.push(sop_gender[key]);
+  			}
+  			
+  			value =[];
+  			for(key in sop_department){
+				value.push(sop_department[key]);
+			}
+  			
+  			drawDepartmentInfo("sop_gender", value, width*0.86, 0, info);
+  			info = [];
+  			for(key in sop_major_imfit){
+  				info.push(sop_major_imfit[key]);
+  			}
+  			
+  			drawDepartmentInfo("sop_limfit", value, width*0.86, 0, info);
+  			
+  			drawMajorTitle();
+  		});
+  		
+  		
+  		//hidden event
+  		$('#pre_select').change(function(){
+  			var val = $('#pre_select option:selected').text();
+  			if(val == "Male/Female"){
+  				$('#pre_gender').css("display","block");
+  				$('#pre_limfit').css("display","none");
+  			}else{
+  				$('#pre_gender').css("display","none");
+  				$('#pre_limfit').css("display","block");
+  			}
+  		});
+  		
+  		$('#sop_select').change(function(){
+  			var val = $('#sop_select option:selected').text();
+  			if(val == "Male/Female"){
+  				$('#sop_gender').css("display","block");
+  				$('#sop_limfit').css("display","none");
+  			}else{
+  				$('#sop_gender').css("display","none");
+  				$('#sop_limfit').css("display","block");	
+  			}
+  		});
+  		
+  		//id:	the svg id that you want your drawing to fit in
+  		//data: the geneder information of the each department, and lmfit information.
+  		//value: is an array include the number of population in each department
+  		//x:	The top left x-position of this drawing
+  		//y:	The top left y-position of this drawing
+  		function drawDepartmentInfo(id, value, x, y, visinfo){
+  			
+  			var w = width/7;
+  			var h = 0;
+  			var rectangle = d3.select("#"+id).selectAll("svg").data(value);
+  			rectangle.enter().append("svg").attr("id", function(d, i){
+  				return id+"_rect_"+i;
+  			}).attr("width", function(d, i){	
+				return w;
+  			}).attr("height", function(d, i){
+  				return (value[i]/nums * height);
+  			}).attr("x", function(d, i){
+  				return x;
+  			}).attr("y", function(d, i){
+  				h += (value[i]/nums * height)+2;	
+  				return h - (value[i]/nums * height)+y;		
+  			});
+			
+			h = 0;
+			d3.select("#"+id).selectAll("text").data(department_name)
+			.enter().append("text").attr("x", function(d, i){
+				return 15+x;
+			}).attr("y", function(d, i){
+				h += (value[i]/nums * height)+2;	
+  				return h - (value[i]/nums * height)/2+y;
+			}).attr("fill", "white").text(function(d){
+				return d;
+			}).attr("font-family", "sans-serif").attr("font-size", "12px")
+			.on("mouseout", function(d, index){
+				d3.select("#"+id+"_rect_"+index).selectAll('rect').attr("fill", "gray");
+			}).on("mouseover", function(d, index){
+				d3.select("#"+id+"_rect_"+index).selectAll('rect').attr("fill", "green");
+			});
+
+
+  			for(var i = 0; i < visinfo.length; i++){
+  				var wt = 0;
+  				
+  				d3.select("#"+id+"_rect_"+i).selectAll("rect").data(visinfo[i])
+  				.enter().append("rect")
+  				.attr("width", function(d, index){
+  					return visinfo[i][index]/d3.sum(visinfo[i])*w;
+  				}).attr("height", function(d, index){
+  					return d3.sum(visinfo[i])/nums*height;
+  				}).attr("x", function(d, index){
+  					wt += (visinfo[i][index]/d3.sum(visinfo[i])*w + 2);
+  					return wt - (visinfo[i][index]/d3.sum(visinfo[i])*w + 2);
+  				}).attr("fill", "gray").on("mouseover", function(d,index){
+  					d3.select(this).attr("fill",activeColor[index]);
+  				}).on("mouseout", function(d, index){
+  					d3.select(this).attr("fill", "gray");
+  				});
+  			}
+  			
+  			
+  			
+  			
+  		}	
+  		
+  		function drawMajorTitle(){
+  			var text = d3.select("#majorTitle").selectAll("text").data(major_name);
+  			text.enter().append("text").attr("x", 0).attr("y", function(d, index){
+  				return index * width * 0.025+20;
+  			}).text(function(d, index){
+  				return d;
+  			}).attr("font-family", "sans-serif").attr("font-size", "10px");
+  		}
+  		
+  		function dataInitialization(data){
+  			activeColor = ["green", "pink", "orange", "burlywood", "blue", "purple"]; 
+  			pre_department = {"Health" : 0, "Business" : 0, "Humanities": 0,
+    	 						"Education & Service":0, "Engineering & Technology":0, "Science & Math":0};
+    	 
+    		sop_department = {"Health" : 0, "Business" : 0, "Humanities": 0,
+    	 						"Education & Service":0, "Engineering & Technology":0, "Science & Math":0};
+    	
+    		pre_gender = {"Health" : [0,0], "Business" : [0,0], "Humanities": [0,0],
+    	 						"Education & Service":[0,0], "Engineering & Technology":[0,0], "Science & Math":[0,0]};
+    	 
+    		sop_gender = {"Health" : [0,0], "Business" : [0,0], "Humanities": [0,0],
+    	 						"Education & Service":[0,0], "Engineering & Technology":[0,0], "Science & Math":[0,0]};
+    		
+    		pre_major_imfit = {"Health" : [0,0,0], "Business" : [0,0,0], "Humanities": [0,0,0],
+    	 						"Education & Service":[0,0,0], "Engineering & Technology":[0,0,0], "Science & Math":[0,0,0]};
+    	 						
+    	 	sop_major_imfit = {"Health" : [0,0,0], "Business" : [0,0,0], "Humanities": [0,0,0],
+    	 						"Education & Service":[0,0,0], "Engineering & Technology":[0,0,0], "Science & Math":[0,0,0]};
+ 
+    		pre_major = {"Agric. & Nat. Res. Cons":0, "Architecture":0,"Area, Eth. & Multidiscip. Studies":0, 
+    		"Arts: Visual & Performing":0,"Business":0, "Commun, Fam., & Personal Svcs":0, "Communications":0, 
+    		"Comp. Sci. & Mathematics":0,"Education":0, "Eng. Tech. & Drafting":0,"Engineering":0,"English & Foreign Lang.":0,
+    		"Health Admin. & Assisting":0,"Health Sci. & Techno.":0,"Philosophy, Religion, & Theology":0,
+    		"Repair, Production, & Construction":0, "Sciences: Biological & Physical":0,"Social Sciences & Law":0};
+    	
+    		 sop_major = {"Agric. & Nat. Res. Cons":0, "Architecture":0,"Area, Eth. & Multidiscip. Studies":0, 
+    		"Arts: Visual & Performing":0,"Business":0, "Commun, Fam., & Personal Svcs":0, "Communications":0, 
+    		"Comp. Sci. & Mathematics":0,"Education":0, "Eng. Tech. & Drafting":0,"Engineering":0,"English & Foreign Lang.":0,
+    		"Health Admin. & Assisting":0,"Health Sci. & Techno.":0,"Philosophy, Religion, & Theology":0,
+    		"Repair, Production, & Construction":0, "Sciences: Biological & Physical":0,"Social Sciences & Law":0};
+    	
+  			
+  			var sum = 0;
+  			major_name = Object.keys(pre_major).map(function(value){
+   				return [value];
+   			});
+   			
+   			department_name = Object.keys(pre_department).map(function(value){
+   				return [value];
+   			});
+  			
+  			//skip the label line
+  			for(var i = 1; i < data.length; i++){
+  				pre_major[data[i][2]] += parseInt(data[i][12]);
+  				sop_major[data[i][4]] += parseInt(data[i][12]);
+  				sum += parseInt(data[i][12]);
+  				
+  				if(data[i][0] == "Female"){
+  					pre_gender[getDepartment(data[i][2])][1] += parseInt(data[i][12]);
+  					sop_gender[getDepartment(data[i][4])][1] += parseInt(data[i][12]);
+  				}else{
+  					pre_gender[getDepartment(data[i][2])][0] += parseInt(data[i][12]);
+  					sop_gender[getDepartment(data[i][4])][0] += parseInt(data[i][12]);
+  				}
+  				
+  				if(data[i][5] == "Good"){
+  					pre_major_imfit[getDepartment(data[i][2])][0] += parseInt(data[i][12]);
+  				}else if(data[i][5] == "Moderate"){
+  					pre_major_imfit[getDepartment(data[i][2])][1] += parseInt(data[i][12]);
+  				}else if(data[i][5] == "Poor"){
+  					pre_major_imfit[getDepartment(data[i][2])][2] += parseInt(data[i][12]);
+  				}else{
+  					throw "Unknow imfit";
+  				}
+  				
+  				
+  				if(data[i][7] == "Good"){
+  					sop_major_imfit[getDepartment(data[i][4])][0] += parseInt(data[i][12]);
+  				}else if(data[i][7] == "Moderate"){
+  					sop_major_imfit[getDepartment(data[i][4])][1] += parseInt(data[i][12]);
+  				}else if(data[i][7] == "Poor"){
+  					sop_major_imfit[getDepartment(data[i][4])][2] += parseInt(data[i][12]);
+  				}else{
+  					throw "Unknow imfit";
+  				}
+  			}
+  			
+  			for(key in pre_major){
+  				pre_department[getDepartment(key)] += pre_major[key];
+  				sop_department[getDepartment(key)] += sop_major[key];
+  			}
+  			
+  			return sum;
+  			
+  		}
+
+		function getDepartment(major){
+			switch(major){
+    			case major_name[13][0]:
+    			case major_name[12][0]:
+    				return "Health";
+    			case major_name[4][0]:
+    				return "Business";
+    			case major_name[6][0]:
+    			case major_name[11][0]:
+    			case major_name[14][0]:
+    			case major_name[17][0]:
+    			case major_name[3][0]:
+    				return "Humanities";
+    			case major_name[7][0]:
+    			case major_name[16][0]:
+    			case major_name[0][0]:
+    			case major_name[2][0]:
+    				return "Science & Math";
+    			case major_name[5][0]:
+    			case major_name[8][0]:
+    				return "Education & Service";
+    			case major_name[10][0]:
+    			case major_name[9][0]:
+    			case major_name[1][0]:
+    			case major_name[15][0]:
+    				return "Engineering & Technology";
+    			default:
+    				throw "Unknow Major";
+    		}
+		}  		
+  	</script>
+	
+	
+	</body>
+</html>
