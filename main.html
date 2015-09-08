@@ -3,6 +3,19 @@
 	<head>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+		<style>
+			#d3-tip {
+				line-height: 1;
+				font-weight: bold;
+				padding: 12px;
+				background: rgba(0, 0, 0, 0.8);
+				color: #fff;
+				border-radius: 2px;
+				position: absolute;
+				display: none;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -17,6 +30,10 @@
 			<svg id="sop_major"></svg>
 			<svg id="majorpath"></svg>
 		</svg>
+		<svg id="chart_title_bottom"></svg>
+		<div id="d3-tip">
+
+		</div>
 		<script>
 			var activeColor;
 
@@ -91,7 +108,7 @@
 			var margin = {
 				top : 40,
 				right : 10,
-				bottom : 30,
+				bottom : 80,
 				left : 50
 			},
 			    width = window.innerWidth - margin.right - margin.left,
@@ -164,7 +181,9 @@
 				drawMajorFlowPath();
 				drawLable();
 			});
-
+			
+			
+			
 			function drawLable() {
 				var p_x = width * 0.23 + width / 8;
 				var f_x = width * 0.63;
@@ -176,6 +195,11 @@
 				var p_s_l_bar_b = width * 0.53 + width / 29;
 				var f_s_l_bar_f = width * 0.82;
 				var f_s_l_bar_b = f_s_l_bar_f + width / 29;
+				
+				var p_l_x = width * 0.23 - width / 30;
+				var f_l_x = width * 0.63 - width / 30;
+				var s_l_x = width * 0.9 - width / 30;
+				
 				var chart = d3.select("#chart_title").attr("height", 50).attr("width", width);
 				chart.append("svg").selectAll("text").data(["Planned Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
@@ -226,6 +250,77 @@
 						return 40;
 				}).attr("fill", "black").attr("font-size", 14);
 
+				var text = ["G", "M", "B"];
+				var he = 0;
+				var data;
+				for(key in pre_college){
+					data = pre_college[key];
+					d3.select("#chart").append("svg").attr("class", key).attr("display", "none").selectAll("text").data(text).enter().append("text").text(function(d, index){
+						return d;
+					}).attr("x", function(d, index){
+						return p_l_x;
+					}).attr("y", function(d, index){
+						if (index == 0)
+							return he+(data[0]+data[1])/nums*(height-25)/2;
+						else if(index == 1)
+							return he + (data[0]+data[1])/nums * (height - 25)+(data[2]+data[3])/nums * (height - 25)/2;
+						else  
+							return he + (d3.sum(data) - data[4] - data[5])/nums * (height-25)+(data[4]+data[5])/nums * (height - 25)/2;
+					}).attr("fill", "black").attr("font-size", 10);
+					 
+					he += d3.sum(data)/nums * (height-25)+5;
+				}
+				
+			
+				he = 0;
+				var data;
+				for(key in fre_college){
+					data = fre_college[key];
+					d3.select("#chart").append("svg").attr("class", key).attr("display", "none").selectAll("text").data(text).enter().append("text").text(function(d, index){
+						return d;
+					}).attr("x", function(d, index){
+						return f_l_x;
+					}).attr("y", function(d, index){
+						if (index == 0)
+							return he+(data[0]+data[1])/nums*(height-25)/2;
+						else if(index == 1)
+							return he + (data[0]+data[1])/nums * (height - 25)+(data[2]+data[3])/nums * (height - 25)/2;
+						else  
+							return he + (d3.sum(data) - data[4] - data[5])/nums * (height-25)+(data[4]+data[5])/nums * (height - 25)/2;
+					}).attr("fill", "black").attr("font-size", 10);
+					 
+					he += d3.sum(data)/nums * (height-25)+5;
+				}
+				
+				he = 0;
+				var data;
+				for(key in sop_college){
+					data = sop_college[key];
+					d3.select("#chart").append("svg").attr("class", key).attr("display", "none").selectAll("text").data(text).enter().append("text").text(function(d, index){
+						return d;
+					}).attr("x", function(d, index){
+						return s_l_x;
+					}).attr("y", function(d, index){
+						if (index == 0)
+							return he+(data[0]+data[1])/nums*(height-25)/2;
+						else if(index == 1)
+							return he + (data[0]+data[1])/nums * (height - 25)+(data[2]+data[3])/nums * (height - 25)/2;
+						else  
+							return he + (d3.sum(data) - data[4] - data[5])/nums * (height-25)+(data[4]+data[5])/nums * (height - 25)/2;
+					}).attr("fill", "black").attr("font-size", 10);
+					 
+					he += d3.sum(data)/nums * (height-25)+5;
+				}
+				text = ["G : Good", "M : Moderate", "B : Bad"];
+				d3.select("#chart_title_bottom").attr("height", 40).attr("width", width).append("svg").selectAll("text").data(text).enter().append("text").text(function(d){return d;}).attr("x", function(d, index){
+					if(index == 0)
+						return width*9/12;
+					else if(index == 1)
+						return width*9/12 + width/12;
+					else if(index == 2)
+						return width*9/12 + width/6;
+				}).attr("y", 30).attr("fill", "black").attr("font-size", 14);;
+				
 			}
 
 			function drawMajorFlowPath() {
@@ -289,8 +384,18 @@
 							return 0.8;
 						}).on("mouseover", function(d, index) {
 							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							$("#d3-tip").show();
+							for (key in pre_major) {
+								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+									continue;
+								else
+									d3.select("#d3-tip").html(key + "<br>" + " population:" + (ACT[key][index * 2] + ACT[key][index * 2 + 1]) + "<br>" + "% in major:" + ((ACT[key][index * 2] + ACT[key][index * 2 + 1]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + ((ACT[key][index * 2] + ACT[key][index * 2 + 1]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+							}
 						}).on("mouseout", function(d, index) {
 							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+							$("#d3-tip").hide();
 						});
 						;
 
@@ -321,11 +426,21 @@
 							else
 								return "rgb(255, 125, 92)";
 						}).attr("fill-opacity", function(d, index) {
-								return 0.8;
+							return 0.8;
 						}).on("mouseover", function(d, index) {
 							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							$("#d3-tip").show();
+							for (key in pre_major) {
+								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+									continue;
+								else
+									d3.select("#d3-tip").html(key + "<br>" + " population:" + ACT[key][index] + "<br>" + "% in major:" + (ACT[key][index] / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (ACT[key][index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+							}
 						}).on("mouseout", function(d, index) {
 							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+							$("#d3-tip").hide();
 						});
 						;
 
@@ -335,8 +450,31 @@
 						//stay path
 						path = "M";
 						path += p_s_l_bar_b + " " + (fre_switch.stay / nums * height - pre_major_switch[majors[i]][0] / nums * height) + " L" + f_x + " " + getMajor_Y_Location(majors[i], fre_department, fre_major) + " L" + f_x + " " + (getMajor_Y_Location(majors[i], fre_department, fre_major) + d3.sum(fre_college_switch[key][majors[i]]) / nums * (height - 25)) + " L" + p_s_l_bar_b + " " + (fre_switch.stay / nums * height) + " Z";
-
 						pathset.push(path);
+						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
+							return pathset[index];
+						}).attr("fill", function(d, index) {
+							if (index == 0)
+								return "rgb(153, 204, 255)";
+							else
+								return "rgb(255, 125, 92)";
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).on("mouseover", function(d, index) {
+							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							$("#d3-tip").show();
+							for (key in pre_major) {
+								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+									continue;
+								else
+									d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(fre_college_switch[getDepartment(key)][key]) + "<br>" + "% in major:" + (d3.sum(fre_college_switch[getDepartment(key)][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(fre_college_switch[getDepartment(key)][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+							}
+						}).on("mouseout", function(d, index) {
+							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+							$("#d3-tip").hide();
+						});
+						pathset = [];
 
 						//leave path
 						var fre_dep_sum = 0;
@@ -358,18 +496,30 @@
 						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
 							return pathset[index];
 						}).attr("fill", function(d, index) {
-							if (index == 0)
-								return "rgb(153, 204, 255)";
-							else
-								return "rgb(255, 125, 92)";
+							return "rgb(255, 125, 92)";
 						}).attr("fill-opacity", function(d, index) {
-								return 0.8;
+							return 0.8;
 						}).on("mouseover", function(d, index) {
 							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							$("#d3-tip").show();
+
+							for (key in pre_major) {
+								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+									continue;
+								else {
+									var i = 0;
+									for (; i < department_name.length; i++)
+										if (department_name[i] == getDepartment(key))
+											break;
+									if (index >= i)
+										index++;
+									d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(fre_college_switch[department_name[index]][key]) + "<br>" + "% in major:" + (d3.sum(fre_college_switch[department_name[index]][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(fre_college_switch[department_name[index]][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+								}
+							}
 						}).on("mouseout", function(d, index) {
 							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+							$("#d3-tip").hide();
 						});
-						;
 
 						//draw flow path from fre major to sop stay or leave bar.
 						{
@@ -392,7 +542,7 @@
 								else
 									return "rgb(255, 125, 92)";
 							}).attr("fill-opacity", function(d, index) {
-									return 0.8;
+								return 0.8;
 							}).on("mouseover", function(d, index) {
 								d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
 							}).on("mouseout", function(d, index) {
@@ -409,8 +559,30 @@
 							//stay path
 							path = "M";
 							path += f_s_l_bar_b + " " + (sop_switch.stay / nums * height - fre_major_switch[majors[i]][0] / nums * height) + " L" + s_x + " " + getMajor_Y_Location(majors[i], sop_department, sop_major) + " L" + s_x + " " + (getMajor_Y_Location(majors[i], sop_department, sop_major) + d3.sum(sop_college_switch[key][majors[i]]) / nums * (height - 25)) + " L" + f_s_l_bar_b + " " + (sop_switch.stay / nums * height) + " Z";
-
 							pathset.push(path);
+							d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
+								return pathset[index];
+							}).attr("fill", function(d, index) {
+								if (index == 0)
+									return "rgb(153, 204, 255)";
+								else
+									return "rgb(255, 125, 92)";
+							}).attr("fill-opacity", function(d, index) {
+								return 0.8;
+							}).on("mouseover", function(d, index) {
+								d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+								$("#d3-tip").show();
+								for (key in pre_major) {
+									if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+										continue;
+									else
+										d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(sop_college_switch[getDepartment(key)][key]) + "<br>" + "% in major:" + (d3.sum(sop_college_switch[getDepartment(key)][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(sop_college_switch[getDepartment(key)][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+								}
+							}).on("mouseout", function(d, index) {
+								d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+								$("#d3-tip").hide();
+							});
+							pathset = [];
 
 							//leave path
 							var sop_dep_sum = 0;
@@ -432,16 +604,29 @@
 							d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
 								return pathset[index];
 							}).attr("fill", function(d, index) {
-								if (index == 0)
-									return "rgb(153, 204, 255)";
-								else
-									return "rgb(255, 125, 92)";
+								return "rgb(255, 125, 92)";
 							}).attr("fill-opacity", function(d, index) {
-									return 0.8;
+								return 0.8;
 							}).on("mouseover", function(d, index) {
 								d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+								$("#d3-tip").show();
+
+								for (key in pre_major) {
+									if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+										continue;
+									else {
+										var i = 0;
+										for (; i < department_name.length; i++)
+											if (department_name[i] == getDepartment(key))
+												break;
+										if (index >= i)
+											index++;
+										d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(sop_college_switch[department_name[index]][key]) + "<br>" + "% in major:" + (d3.sum(sop_college_switch[department_name[index]][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(sop_college_switch[department_name[index]][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+									}
+								}
 							}).on("mouseout", function(d, index) {
 								d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+								$("#d3-tip").hide();
 							});
 							;
 						}
@@ -529,10 +714,26 @@
 							return "rgb(255, 125, 92)";
 					}).on("mouseover", function(d, index) {
 						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+						$("#d3-tip").show();
+						for (key in pre_major) {
+							if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+								continue;
+							else
+								d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+						}
+
 					}).on("mouseout", function(d, index) {
 						d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+						$("#d3-tip").hide();
+
 					});
 				}
+				
+				d3.select("#" + id).append("text").text(college_name.substring(0,2)).attr("x", x + width / 30).attr("y", y + h/2).attr("fill", "rgb(153, 178, 255)").attr("font-size", 14)
+				.on("mouseover", function(){
+					//d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+				});
 			}
 
 			//data is the number of people in each department.
@@ -556,7 +757,7 @@
 				for (var i = 0; i < title.length; i++) {
 					h += data[i] / nums * height;
 					d3.select("#majorTitle" + i).selectAll("text").data(title[i]).enter().append("text").attr("x", 0).attr("y", function(d, index) {
-						return h - (1 - index / title[i].length) * data[i] / nums * height + 20;
+						return h - (1 - index / title[i].length) * data[i] / nums * height + 17;
 					}).text(function(d) {
 						return d;
 					}).attr("font-family", "sans-serif").attr("font-size", function(d, index) {
@@ -564,6 +765,7 @@
 					}).on("mouseover", function(d, index) {
 
 						for (key in pre_major) {
+							$("."+getDepartment(key)).hide();
 							name = key;
 							name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
 							$("." + name).hide();
@@ -574,8 +776,15 @@
 							return d3.sum(pre_major[d]) / nums * 40 + 10 + "px";
 						}).attr("fill", "blue");
 
+						$("."+getDepartment(d)).show();
+						$("#d3-tip").show();
+						d3.select("#d3-tip").html(d + "<br>" + " population:" + d3.sum(pre_major[d]) + "<br>" + "% in all:" + (d3.sum(pre_major[d]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
 						d = d.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
 						$("." + d).fadeIn("slow");
+						
+					}).on("mouseout", function(d, index) {
+						$("#d3-tip").hide();
 					}).attr("class", function(d, index) {
 						name = d;
 						name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
@@ -632,8 +841,17 @@
 						return 0;
 					}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
 						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+						$("#d3-tip").show();
+						for (key in pre_major) {
+							if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+								continue;
+							else
+								d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major_switch[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+						}
 					}).on("mouseout", function(d, index) {
 						d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+						$("#d3-tip").hide();
 					});
 				}
 
@@ -690,10 +908,19 @@
 						return 0.8;
 					}).attr("stroke-width", 0).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
 						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+						$("#d3-tip").show();
+						for (key in pre_major) {
+							if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+								continue;
+							else
+								d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major_switch[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+						}
 					}).on("mouseout", function(d, index) {
 						d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+						$("#d3-tip").hide();
 					});
-					;
+
 				}
 
 				d3.select("#" + id).selectAll("text").data(text).enter().append("text").attr("x", x + 5).attr("y", function(d, index) {
@@ -1485,9 +1712,9 @@
 				case major_name[12][0]:
 					return "Health";
 				case major_name[4][0]:
-				case major_name[17][0]:
 					return "Business";
 				case major_name[6][0]:
+				case major_name[17][0]:
 				case major_name[11][0]:
 				case major_name[14][0]:
 				case major_name[3][0]:
