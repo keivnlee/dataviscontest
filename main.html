@@ -30,7 +30,7 @@
 			<svg id="sop_major"></svg>
 			<svg id="majorpath"></svg>
 		</svg>
-		<svg id="chart_title_bottom"></svg>
+		<svg id="story"></svg>
 		<div id="d3-tip">
 
 		</div>
@@ -113,8 +113,15 @@
 			},
 			    width = window.innerWidth - margin.right - margin.left,
 			    height = window.innerHeight - margin.top - margin.bottom;
+			    
+			var pre_x = width /8 + 0.045*width + width/24 ;
+			var pre_act_x = width/8*2+width/24+ 0.045*width*2;
+			var pre_s_l_x =width/8*2+width/24+ 0.045*width*3+width/29;
+			var fre_x = width/8*2+width/24*2+ 0.045*width*4+width/29*2;
+			var fre_s_l_x = width/8*3+width/24 * 2+ 0.045*width*5+width/29*2;
+			var sop_x = width/8*3+width/24 * 2+ 0.045*width*7+width/29*3;
 
-			d3.select("#chart").attr("width", window.innerWidth).attr("height", height);
+			d3.select("#chart").attr("width", width+2).attr("height", height);
 
 			d3.text("data.csv", function(unparseData) {
 				//intial the vis data.
@@ -128,8 +135,6 @@
 					act_score_text.push(key);
 				}
 
-				drawFeatureBar("act", act_score_nums, act_score_text, width * 0.43, ACT);
-
 				var dep_nums = [];
 				for (key in pre_department) {
 					dep_nums.push(pre_department[key]);
@@ -142,9 +147,13 @@
 				var college_major_name;
 				for (key in pre_college) {
 					college_major_name = department_major_tree[key];
-					drawCollegeMosaicPlot("pre_major", key, pre_college[key], width * 0.23, temp, width / 8, d3.sum(pre_college[key]) / nums * (height - 25), college_major_name, pre_major);
+					drawCollegeMosaicPlot("pre_major", key, pre_college[key], pre_x, temp, width / 8, d3.sum(pre_college[key]) / nums * (height - 25), college_major_name, pre_major);
 					temp += d3.sum(pre_college[key]) / nums * (height - 25) + 5;
 				}
+				
+				drawFeatureBar("act", act_score_nums, act_score_text, pre_act_x, ACT);
+				drawStayOrLeaveBar("fresh", [fre_switch.stay, fre_switch.leave], pre_s_l_x, pre_major_switch);
+				
 
 				/************************************************************************
 				 fresh man major info
@@ -155,7 +164,7 @@
 					college_major_name.push(key);
 				}
 				for (key in fre_college) {
-					drawCollegeMosaicPlot("fre_major", key, fre_college[key], width * 0.63, temp, width / 8, d3.sum(fre_college[key]) / nums * (height - 25), college_major_name, fre_college_switch[key]);
+					drawCollegeMosaicPlot("fre_major", key, fre_college[key], fre_x, temp, width / 8, d3.sum(fre_college[key]) / nums * (height - 25), college_major_name, fre_college_switch[key]);
 					temp += d3.sum(fre_college[key]) / nums * (height - 25) + 5;
 				}
 
@@ -166,7 +175,7 @@
 				temp = 0;
 
 				for (key in sop_college) {
-					drawCollegeMosaicPlot("sop_major", key, sop_college[key], width * 0.9, temp, width / 8, d3.sum(sop_college[key]) / nums * (height - 25), college_major_name, sop_college_switch[key]);
+					drawCollegeMosaicPlot("sop_major", key, sop_college[key], sop_x, temp, width / 8, d3.sum(sop_college[key]) / nums * (height - 25), college_major_name, sop_college_switch[key]);
 					temp += d3.sum(sop_college[key]) / nums * (height - 25) + 5;
 				}
 
@@ -175,28 +184,33 @@
 					value.push(actcat[key]);
 				}
 
-				drawStayOrLeaveBar("fresh", [fre_switch.stay, fre_switch.leave], width * 5.3 / 10, pre_major_switch);
-				drawStayOrLeaveBar("sopho", [sop_switch.stay, sop_switch.leave], width * 8.2 / 10, fre_major_switch);
+				drawStayOrLeaveBar("sopho", [sop_switch.stay, sop_switch.leave], fre_s_l_x, fre_major_switch);
 
 				drawMajorFlowPath();
 				drawLable();
 			});
 
+			// add story panel
+			var panel = d3.select("#story").attr("height", height).attr("width", window.innerWidth - width-40);
+			panel.append("rect").attr("height", height).attr("width", window.innerWidth - width-40)
+			.attr("x", 10).attr("y", 0).attr("fill", "blue").attr("fill-opacity", 0.1);
+
+
 			function drawLable() {
-				var p_x = width * 0.23 + width / 8;
-				var f_x = width * 0.63;
-				var f_b = f_x + width / 8;
-				var s_b = width * 0.9 + width / 8;
-				var act_x_f = width * 0.43;
-				var act_x_b = width * 0.43 + width / 29;
-				var p_s_l_bar_f = width * 0.53;
-				var p_s_l_bar_b = width * 0.53 + width / 29;
-				var f_s_l_bar_f = width * 0.82;
+				var p_x = pre_x + width / 8;
+				var f_x = fre_x;
+				var f_b = fre_x + width / 8;
+				var s_b = sop_x + width / 8;
+				var act_x_f = pre_act_x;
+				var act_x_b = pre_act_x + width / 29;
+				var p_s_l_bar_f = pre_s_l_x;
+				var p_s_l_bar_b = pre_s_l_x + width / 29;
+				var f_s_l_bar_f = fre_s_l_x;
 				var f_s_l_bar_b = f_s_l_bar_f + width / 29;
 
-				var p_l_x = width * 0.23 - width / 30;
-				var f_l_x = width * 0.63 - width / 30;
-				var s_l_x = width * 0.9 - width / 30;
+				var p_l_x = pre_x - width / 30;
+				var f_l_x = fre_x - width / 30;
+				var s_l_x = sop_x - width / 30;
 
 				var chart = d3.select("#chart_title").attr("height", 50).attr("width", width);
 				chart.append("svg").selectAll("text").data(["Planned Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
@@ -252,15 +266,15 @@
 
 			function drawMajorFlowPath() {
 				//x coordination of each component
-				var p_x = width * 0.23 + width / 8;
-				var f_x = width * 0.63;
-				var f_b = f_x + width / 8;
-				var s_x = width * 0.9;
-				var act_x_f = width * 0.43;
-				var act_x_b = width * 0.43 + width / 29;
-				var p_s_l_bar_f = width * 0.53;
-				var p_s_l_bar_b = width * 0.53 + width / 29;
-				var f_s_l_bar_f = width * 0.82;
+				var p_x = pre_x + width / 8;
+				var f_x = fre_x - width/24;
+				var f_b = fre_x + width / 8;
+				var s_x = sop_x - width / 24;
+				var act_x_f = pre_act_x;
+				var act_x_b = pre_act_x + width / 29;
+				var p_s_l_bar_f = pre_s_l_x;
+				var p_s_l_bar_b = pre_s_l_x + width / 29;
+				var f_s_l_bar_f = fre_s_l_x;
 				var f_s_l_bar_b = f_s_l_bar_f + width / 29;
 
 				var dep_y = 0;
@@ -1762,5 +1776,6 @@
 			}
 		</script>
 
+		
 	</body>
 </html>
