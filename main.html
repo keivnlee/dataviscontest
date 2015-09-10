@@ -20,7 +20,7 @@
 			}
 			#story {
 				width: 23%;
-				margin-top: 4%;
+				margin-top: -1%;
 			}
 			#content {
 				width: 77%;
@@ -57,6 +57,7 @@
 
 	<body>
 		<div align="left" id="story">
+			<h3>Changing majors over a student's career</h3>
 			<fieldset>
 				<legend>
 					Data
@@ -305,10 +306,7 @@
 					return 14;
 				}).attr("font-family", function(d, index) {
 					return "Georgia";
-				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
-					if (index == 0)
-						return width / 8;
-				});
+				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -317,12 +315,13 @@
 						return "M" + p_x + " " + 40 + " L" + (p_x - 5) + " " + 35 + " L" + (p_x - 5) + " 45" + " Z";
 				}).attr("fill", function(d, index) {
 					if (index == 0)
-						return "blue";
+						return "rgb(0,69,41)";
 					else
-						return "red";
+						return "rgb(174,1,126)";
 				});
 
 				chart.append("svg").selectAll("text").data(["Planned Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
+					
 					return d;
 				}).attr("x", function(d, index) {
 					if (index == 0)
@@ -346,14 +345,9 @@
 						return "Georgia";
 					else
 						return "Times";
-				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
-					if (index == 0)
-						return width / 8;
-				});
-				chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
-					if (index == 0)
-						return width / 29;
-				});
+				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
+				chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle")
+				.attr("alignment-baseline", "middle");
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -362,9 +356,9 @@
 						return "M" + f_b + " " + 40 + " L" + (f_b - 5) + " " + 35 + " L" + (f_b - 5) + " 45" + " Z";
 				}).attr("fill", function(d, index) {
 					if (index == 0)
-						return "blue";
+						return "rgb(0,69,41)";
 					else
-						return "red";
+						return "rgb(174,1,126)";
 				});
 
 				chart.append("svg").selectAll("text").data(["1 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
@@ -394,7 +388,7 @@
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
 					if (index == 0)
 						return width / 8;
-				});
+				}).attr("alignment-baseline", "middle");
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -403,9 +397,9 @@
 						return "M" + (s_b - 2) + " " + 40 + " L" + (s_b - 7) + " " + 35 + " L" + (s_b - 7) + " 45" + " Z";
 				}).attr("fill", function(d, index) {
 					if (index == 0)
-						return "blue";
+						return "rgb(0,69,41)";
 					else
-						return "red";
+						return "rgb(174,1,126)";
 				});
 				chart.append("svg").selectAll("text").data(["2 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
@@ -431,10 +425,7 @@
 						return "Georgia";
 					else
 						return "Times";
-				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
-					if (index == 0)
-						return width / 8;
-				});
+				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
 
 			}
 
@@ -886,28 +877,17 @@
 						return y + h - (data[4] + data[5]) / nums * (height - 25) / 2;
 
 				}).text(function(d) {
-					return d;
+					return d.split('_').join(' ');
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").style("writing-mode", "tb").attr("font-size", function(d, index) {
 					if (index == 0)
 						return 10;
 					else
-						return 8;
+						return 7;
 				}).attr("textLength", function(d, index) {
-					if (index == 0) {
+					if (index == 0) 
 						if (d3.select(this).node().getBBox().height >= d3.sum(data) / nums * (height - 25))
 							return d3.sum(data) / nums * (height - 25);
-					} else if (index == 1) {
-						if (d3.select(this).node().getBBox().height >= (data[0] + data[1]) / nums * (height - 25))
-							return (data[0] + data[1]) / nums * (height - 25);
-					} else if (index == 2) {
-						if (d3.select(this).node().getBBox().height >= (data[2] + data[3]) / nums * (height - 25))
-							return (data[2] + data[3]) / nums * (height - 25) - 2;
-					} else if (index == 3) {
-						if (d3.select(this).node().getBBox().height >= (data[4] + data[5]) / nums * (height - 25))
-							return (data[4] + data[5]) / nums * (height - 25);
-					}
-
-				});
+				}).attr("alignment-baseline", "middle");
 			}
 
 			//data is the number of people in each department.
@@ -943,7 +923,7 @@
 							return d3.sum(pre_major[d]) / nums * (height - 25);
 					}).attr("width", width / 7.5).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "gray");
 
-					mh = 2;
+					mh = 0;
 					text = d3.select("#majorTitle" + i).selectAll("text").data(title[i]).enter().append("text").attr("x", width / 15).attr("y", function(d, index) {
 						if (d3.sum(pre_major[d]) / nums * (height - 25) < 1) {
 							mh += 2;
@@ -954,7 +934,7 @@
 						}
 					}).text(function(d) {
 						return d;
-					}).attr("font-family", "sans-serif").attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("font-size", function(d, index) {
+					}).attr("alignment-baseline", "middle").attr("font-family", "sans-serif").attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("font-size", function(d, index) {
 						if (d3.sum(pre_major[d]) / nums * height > 12)
 							return 12;
 						else if (d3.sum(pre_major[d]) / nums * height < 5)
@@ -1074,7 +1054,7 @@
 				}).attr("font-family", "sans-serif").attr("font-size", 12).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
 					if (d3.select(this).node().getBBox().width > width / 29)
 						return width / 29;
-				});
+				}).attr("alignment-baseline", "middle");
 
 			}
 
@@ -1147,8 +1127,8 @@
 				}).attr("font-family", "sans-serif").attr("font-size", 12).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
 					if (d3.select(this).node().getBBox().width > width / 29)
 						return width / 29;
-				});
-				;
+				}).attr("alignment-baseline", "middle");
+				
 			}
 
 			function dataInitialization(data) {
