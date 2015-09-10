@@ -380,15 +380,12 @@
 						return 14;
 					else
 						return 10;
-				}).attr("font-family", function(d, index) {
+				}).attr("alignment-baseline", "middle").attr("font-family", function(d, index) {
 					if (index == 0)
 						return "Georgia";
 					else
 						return "Times";
-				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
-					if (index == 0)
-						return width / 8;
-				}).attr("alignment-baseline", "middle");
+				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -876,8 +873,30 @@
 					else
 						return y + h - (data[4] + data[5]) / nums * (height - 25) / 2;
 
-				}).text(function(d) {
-					return d.split('_').join(' ');
+				}).text(function(d, index) {
+					
+					if (index == 0) {
+						if (d3.select(this).node().getBBox().height >= d3.sum(data) / nums * (height - 25))
+							return d.split('_').join(' ');
+						else
+							return d.split('_').join(' ');;
+					} else if (index == 1) {
+						if (d3.select(this).node().getBBox().height >= (data[0] + data[1]) / nums * (height - 25))
+							return "G.";
+						else
+							return d;
+					} else if (index == 2) {
+						if (d3.select(this).node().getBBox().height >= (data[2] + data[3]) / nums * (height - 25))
+							return "Nor.";
+						else
+							return d;
+					} else if (index == 3) {
+						if (d3.select(this).node().getBBox().height >= (data[4] + data[5]) / nums * (height - 25))
+							return "B.";
+						else
+							return d;
+					}
+					
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").style("writing-mode", "tb").attr("font-size", function(d, index) {
 					if (index == 0)
 						return 10;
@@ -887,6 +906,7 @@
 					if (index == 0) 
 						if (d3.select(this).node().getBBox().height >= d3.sum(data) / nums * (height - 25))
 							return d3.sum(data) / nums * (height - 25);
+					
 				}).attr("alignment-baseline", "middle");
 			}
 
