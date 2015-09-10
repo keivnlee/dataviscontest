@@ -19,40 +19,50 @@
 				float: left;
 			}
 			#story {
-				width: 19%;
-				margin-top: 3%;
+				width: 23%;
+				margin-top: 4%;
 			}
 			#content {
-				width: 81%;
+				width: 77%;
 			}
 			p {
 				font-family: Georgia, serif, Times;
-				font-size: 14px;
+				font-size: 12px;	
 			}
 		</style>
 	</head>
 
 	<body>
 		<div align="left" id="story">
+			<fieldset>
+   				 <legend>Data</legend>
 			<p>
-				<strong>Data:</strong> The data contains information about ACT-Test High School graduates that have
+				The data contains information about ACT-Test High School graduates that have
 				persisted to their second year in college. The data describe their indicated interests, as
 				well as their declared majors at the three points in time.
 			</p>
+			</fieldset>
 
+			<fieldset>
+   				 <legend>Vis Coding</legend>
 			<p>
-				<strong>Vis Coding:</strong>This vis combine technique of <a href="#"> Parallel Set</a> and <a href="#"> Mosaic Plot</a>.
+				This vis combine technique of <a href="#"> Parallel Set</a> and <a href="#"> Mosaic Plot</a>.
 				In the major column, user can compare the population of each major
 				in the planed major stage base on the height of rectangle. In Planed Major, 1 Year Major, 2 Year Major column, user
 				can compare the male and female percentage and fit score(good, normal, bad) percentage. The Act bar give user info. about
 				student percetage in each score range and the stay or leave tell user the percetage that student stay in current major or leave.
 			</p>
-
+			</fieldset>
+			<fieldset>
+   				 <legend>Interesting Case</legend>
 			<p>
-				<strong>Interesting Case:</strong>
+				
 				<a href="#">Health Sci. & Techno.</a> has the maximum outflux in the first year. <a href="#">Arts: Visual & Performing</a> Student has high percent fit well in this major
 			</p>
-
+			</fieldset>
+			
+			<fieldset>
+   				 <legend>Author</legend>
 			<p>
 				<strong>Author:</strong>
 				<br>
@@ -60,6 +70,7 @@
 				<br>
 				Alexander Lex
 			</p>
+			</fieldset>
 		</div>
 		<div align="right" id="content">
 			<svg id="chart_title"></svg>
@@ -275,7 +286,12 @@
 						return "M"+p_d+" "+40+" L"+(p_d+5)+" "+35+" L"+(p_d+5)+" 45"+" Z";
 					else
 						return "M"+p_x+" "+40+" L"+(p_x-5)+" "+35+" L"+(p_x-5)+" 45"+" Z";
-				}).attr("fill", "red");
+				}).attr("fill", function(d, index){
+					if(index == 0)
+						return "blue";
+					else
+						return "red";
+				});
 				
 				chart.append("svg").selectAll("text").data(["Planned Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
@@ -315,7 +331,12 @@
 						return "M"+f_x+" "+40+" L"+(f_x+5)+" "+35+" L"+(f_x+5)+" 45"+" Z";
 					else
 						return "M"+f_b+" "+40+" L"+(f_b-5)+" "+35+" L"+(f_b-5)+" 45"+" Z";
-				}).attr("fill", "red");
+				}).attr("fill", function(d,index){
+					if(index == 0)
+						return "blue";
+					else
+						return "red";
+				});
 				
 				chart.append("svg").selectAll("text").data(["1 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
@@ -352,7 +373,12 @@
 						return "M"+s_x+" "+40+" L"+(s_x+5)+" "+35+" L"+(s_x+5)+" 45"+" Z";
 					else
 						return "M"+(s_b-2)+" "+40+" L"+(s_b-7)+" "+35+" L"+(s_b-7)+" 45"+" Z";
-				}).attr("fill", "red");
+				}).attr("fill", function(d,index){
+					if(index == 0)
+						return "blue";
+					else
+						return "red";
+				});
 				chart.append("svg").selectAll("text").data(["2 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
 				}).attr("x", function(d, index) {
@@ -1014,10 +1040,14 @@
 				h = 0;
 				d3.select("#" + id).selectAll("text").data(act_score_text).enter().append("text").text(function(d) {
 					return d;
-				}).attr("x", x + 5).attr("y", function(d, index) {
+				}).attr("x", x + width/29/2).attr("y", function(d, index) {
 					h += (act_score_nums[index] / nums * height) + 1;
 					return h - (act_score_nums[index] / nums * height) / 2;
-				}).attr("font-family", "sans-serif").attr("font-size", 12);
+				}).attr("font-family", "sans-serif").attr("font-size", 12).attr("lengthAdjust", "spacingAndGlyphs")
+				.style("text-anchor", " middle").attr("textLength", function(d, index) {
+					if(d3.select(this).node().getBBox().width > width/29)
+						return width/29;
+				});
 
 			}
 
@@ -1079,7 +1109,7 @@
 
 				}
 
-				d3.select("#" + id).selectAll("text").data(text).enter().append("text").attr("x", x + 5).attr("y", function(d, index) {
+				d3.select("#" + id).selectAll("text").data(text).enter().append("text").attr("x", x + width/29/2).attr("y", function(d, index) {
 					if (index == 0) {
 						return (data[0]) / nums * height / 2;
 					} else {
@@ -1087,7 +1117,11 @@
 					}
 				}).text(function(d) {
 					return d;
-				}).attr("font-family", "sans-serif").attr("font-size", 12);
+				}).attr("font-family", "sans-serif").attr("font-size", 12).attr("lengthAdjust", "spacingAndGlyphs")
+				.style("text-anchor", " middle").attr("textLength", function(d, index) {
+					if(d3.select(this).node().getBBox().width > width/29)
+						return width/29;
+				});;
 			}
 
 			function dataInitialization(data) {
