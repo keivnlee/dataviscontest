@@ -5,46 +5,11 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 		<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 		<style>
-			#d3-tip {
-				line-height: 1;
-				font-weight: bold;
-				padding: 12px;
-				background: rgba(0, 0, 0, 0.8);
-				color: #fff;
-				border-radius: 2px;
-				position: absolute;
-				display: none;
-			}
+		
 			div {
 				float: left;
 			}
 			
-			/*story panel div*/
-			#story {
-				width: 23%;
-				margin-top: -1%;
-			}
-			
-			/*vis panel div*/
-			#content {
-				width: 77%;
-			}
-			
-			/*story text paragraph*/
-			p {
-				font-family: Georgia, serif, Times;
-				font-size: 12px;
-			}
-			
-			
-			/*
-			 	Title
-			 */
-			h3{
-				
-			}
-			
-
 			a{
 				 text-decoration: none;
 			}
@@ -67,6 +32,65 @@
 			a:active {
 				color: yellow;
 			}
+		
+			/*pop out text box*/
+			#d3-tip {
+				line-height: 1;
+				font-weight: bold;
+				padding: 12px;
+				background: rgba(0, 0, 0, 0.8);
+				color: #fff;
+				border-radius: 2px;
+				position: absolute;
+				display: none;
+			}
+			
+			
+			/*story panel div*/
+			#story {
+				width: 23%;
+				margin-top: -1%;
+			}
+			
+			/*vis panel div*/
+			#content {
+				width: 77%;
+			}
+			
+			/*story  paragraph text*/
+			p {
+				font-family: Georgia, serif, Times;
+				font-size: 12px;
+			}
+			
+			/*ACT score text*/
+			.score_text{
+				font-size:12px;
+			}
+			
+			.stay_leave_text{
+				font-size:12px;
+			}
+			/* main title:Major Category, Planned Major, ACT, 1 Year Major, 2 Year Major*/
+			.main-title{
+				font-size:14px;
+			}
+			
+			.gender-title{
+				font-size:10px;
+			}
+			
+			/*fit text: good, normal, bad*/
+			.fit{
+				color:#FF0000;
+				font-size:8px;
+			}
+			
+			.college_name{
+				color:#FF0000;
+				font-size:12px;
+			}
+					
 		</style>
 	</head>
 
@@ -313,6 +337,8 @@
 
 				chart.append("svg").selectAll("text").data(["Major Category"]).enter().append("text").text(function(d, index) {
 					return d;
+				}).attr("class", function(d, index){
+						return "main-title";
 				}).attr("x", function(d, index) {
 					return width / 8 / 2;
 				}).attr("y", function(d, index) {
@@ -336,8 +362,12 @@
 				});
 
 				chart.append("svg").selectAll("text").data(["Planned Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
-					
 					return d;
+				}).attr("class", function(d, index){
+					if(index == 0)
+						return "main-title";
+					else
+						return "gender-title";
 				}).attr("x", function(d, index) {
 					if (index == 0)
 						return p_x - width / 8 / 2;
@@ -362,7 +392,9 @@
 						return "Times";
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
 				chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle")
-				.attr("alignment-baseline", "middle");
+				.attr("alignment-baseline", "middle").attr("class", function(d, index){
+						return "main-title";
+				});
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -378,6 +410,11 @@
 
 				chart.append("svg").selectAll("text").data(["1 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
+				}).attr("class", function(d, index){
+					if(index == 0)
+						return "main-title";
+					else
+						return "gender-title";
 				}).attr("x", function(d, index) {
 					if (index == 0)
 						return f_b - width / 8 / 2;
@@ -415,6 +452,11 @@
 				});
 				chart.append("svg").selectAll("text").data(["2 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
+				}).attr("class", function(d, index){
+					if(index == 0)
+						return "main-title";
+					else
+						return "gender-title";
 				}).attr("x", function(d, index) {
 					if (index == 0)
 						return s_b - width / 8 / 2;
@@ -873,44 +915,29 @@
 						return (data[4] + data[5]) / nums * (height - 25);
 				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "white");
 
-				d3.select("#" + id).append("svg").selectAll("text").data(text).enter().append("text").attr("x", function(d, index) {
+				var temp = d3.select("#" + id).append("svg").selectAll("text").data(text).enter().append("text").attr("x", function(d, index) {
 					if (index == 0)
 						return x - width / 8 * 1 / 3 + width / 8 * 1 / 12;
 					else
 						return x - width / 8 * 1 / 6 + width / 8 * 1 / 12;
+				}).attr("class",function(d, index){
+					if(index == 0)
+						return "college_name";
+					else
+						return "fit";
 				}).attr("y", function(d, index) {
 					if (index == 0)
-						return y + d3.sum(data) / nums * (height - 25) / 2;
+						return y + d3.sum(data) / nums * (height - 25) / 2+3;
 					else if (index == 1)
-						return y + (data[0] + data[1]) / nums * (height - 25) / 2;
+						return y + (data[0] + data[1]) / nums * (height - 25) / 2+3;
 					else if (index == 2)
-						return y + (data[0] + data[1]) / nums * (height - 25) + (data[2] + data[3]) / nums * (height - 25) / 2;
+						return y + (data[0] + data[1]) / nums * (height - 25) + (data[2] + data[3]) / nums * (height - 25) / 2+3;
 					else
-						return y + h - (data[4] + data[5]) / nums * (height - 25) / 2;
+						return y + h - (data[4] + data[5]) / nums * (height - 25) / 2+2;
 
 				}).text(function(d, index) {
-					
-					if (index == 0) {
-						if (d3.select(this).node().getBBox().height >= d3.sum(data) / nums * (height - 25))
-							return d.split('_').join(' ');
-						else
-							return d.split('_').join(' ');;
-					} else if (index == 1) {
-						if (d3.select(this).node().getBBox().height >= (data[0] + data[1]) / nums * (height - 25))
-							return "G.";
-						else
-							return d;
-					} else if (index == 2) {
-						if (d3.select(this).node().getBBox().height >= (data[2] + data[3]) / nums * (height - 25))
-							return "Nor.";
-						else
-							return d;
-					} else if (index == 3) {
-						if (d3.select(this).node().getBBox().height >= (data[4] + data[5]) / nums * (height - 25))
-							return "B.";
-						else
-							return d;
-					}
+					d = d.replace(/\s/g, '');
+					return d.split('_').join(' ');
 					
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").style("writing-mode", "tb").attr("font-size", function(d, index) {
 					if (index == 0)
@@ -923,6 +950,30 @@
 							return d3.sum(data) / nums * (height - 25);
 					
 				}).attr("alignment-baseline", "middle");
+				
+				temp.text(function(d,index){
+					if (index == 0) {
+						if (d3.select(this).node().getBBox().height > d3.sum(data) / nums * (height - 25))
+							return d.split('_').join(' ');
+						else
+							return d.split('_').join(' ');;
+					} else if (index == 1) {
+						if (d3.select(this).node().getBBox().height > (data[0] + data[1]) / nums * (height - 25))
+							return "G.";
+						else
+							return d;
+					} else if (index == 2) {
+						if (d3.select(this).node().getBBox().height > (data[2] + data[3]) / nums * (height - 25))
+							return "N.";
+						else
+							return d;
+					} else if (index == 3) {
+						if (d3.select(this).node().getBBox().height > (data[4] + data[5]) / nums * (height - 25))
+							return "B.";
+						else
+							return d;
+					}
+				});
 			}
 
 			//data is the number of people in each department.
@@ -951,11 +1002,46 @@
 					d3.select("#majorTitle" + i).append("svg").selectAll("rect").data(title[i]).enter().append("rect").attr("x", 0).attr("y", function(d, index) {
 						mh += d3.sum(pre_major[d]) / nums * (height - 25);
 						return h + mh - d3.sum(pre_major[d]) / nums * (height - 25);
+					}).attr("class",function(d,index){
+						name = d;
+						name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+						return name + "rect";
 					}).attr("height", function(d, index) {
 						if (d3.sum(pre_major[d]) / nums * (height - 25) < 1)
 							return 2;
 						else
 							return d3.sum(pre_major[d]) / nums * (height - 25);
+					}).on("mouseover", function(d, index) {
+
+						for (key in pre_major) {
+							$("." + getDepartment(key)).hide();
+							name = key;
+							name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+							$("." + name).hide();
+							d3.select("." + name + "text").attr("font-size", function(d, index) {
+								if (d3.sum(pre_major[key]) / nums * height > 12)
+									return 12;
+								else if (d3.sum(pre_major[key]) / nums * height < 5)
+									return d3.sum(pre_major[key]) / nums * height;
+								else
+									return d3.sum(pre_major[key]) / nums * height;
+							}).attr("fill", "black");
+							
+							d3.select("." + name + "rect").attr("fill", "gray").attr("fill-opacity",0.1);
+						}
+
+						d3.select(this).attr("fill", "rgb(153, 204, 255)").attr("fill-opacity", 0.8);
+						d3.select("."+d.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')+"text").attr("fill","white" );
+						
+						$("." + getDepartment(d)).show();
+						$("#d3-tip").show();
+						d3.select("#d3-tip").html(d + "<br>" + " population:" + d3.sum(pre_major[d]) + "<br>" + "% in all:" + (d3.sum(pre_major[d]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+						d = d.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+						$("." + d).fadeIn("slow");
+
+					}).on("mouseout", function(d, index) {
+						$("#d3-tip").hide();
 					}).attr("width", width / 7.5).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "gray");
 
 					mh = 0;
@@ -994,11 +1080,13 @@
 									return d3.sum(pre_major[key]) / nums * height;
 								else
 									return d3.sum(pre_major[key]) / nums * height;
-							}).attr("fill", "black");
+							}).attr("fill", "black").attr("fill-opacity", 1);
+							d3.select("." + name + "rect").attr("fill", "gray").attr("fill-opacity",0.1);
 						}
 
-						d3.select(this).attr("fill", "rgb(153, 204, 255)");
-
+						d3.select("." + d.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-') + "rect").attr("fill", "rgb(153, 204, 255)").attr("fill-opacity",0.8);
+						d3.select(this).attr("fill", "white");
+						
 						$("." + getDepartment(d)).show();
 						$("#d3-tip").show();
 						d3.select("#d3-tip").html(d + "<br>" + " population:" + d3.sum(pre_major[d]) + "<br>" + "% in all:" + (d3.sum(pre_major[d]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
@@ -1083,7 +1171,7 @@
 				h = 0;
 				d3.select("#" + id).selectAll("text").data(act_score_text).enter().append("text").text(function(d) {
 					return d;
-				}).attr("x", x + width / 29 / 2).attr("y", function(d, index) {
+				}).attr("class", "score_text").attr("x", x + width / 29 / 2).attr("y", function(d, index) {
 					h += (act_score_nums[index] / nums * height) + 1;
 					return h - (act_score_nums[index] / nums * height) / 2;
 				}).attr("font-family", "sans-serif").attr("font-size", 12).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
@@ -1157,7 +1245,7 @@
 					} else {
 						return height - (data[1]) / nums * height / 2;
 					}
-				}).text(function(d) {
+				}).attr("class", 'stay_leave_text').text(function(d) {
 					return d;
 				}).attr("font-family", "sans-serif").attr("font-size", 12).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("textLength", function(d, index) {
 					if (d3.select(this).node().getBBox().width > width / 29)
