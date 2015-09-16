@@ -187,6 +187,19 @@
 		<div id="d3-tip">
 
 		</div>
+		
+		<script>
+		/******************************************************
+		 * CONSTANT PARAMETER
+		 *******************************************************/
+		var stay_good_color = "rgb(78,179,211)",
+			stay_normal_color = "rgb(43,140,190)",
+			stay_bad_color = "rgb(8,104,172)",
+			leave_good_color = "rgb(253,208,162)",
+			leave_normal_color = "rgb(253,141,60)",
+			leave_bad_color = "rgb(217,72,1)";
+		</script>
+		
 		<script>
 			var activeColor;
 
@@ -269,10 +282,11 @@
 
 			var pre_x = width / 8 + 0.045 * width + width / 24;
 			var pre_act_x = width / 8 * 2 + width / 24 + 0.045 * width * 2;
-			var pre_s_l_x = width / 8 * 2 + width / 24 + 0.045 * width * 3 + width / 29;
-			var fre_x = width / 8 * 2 + width / 24 * 2 + 0.045 * width * 4 + width / 29 * 2;
-			var fre_s_l_x = width / 8 * 3 + width / 24 * 2 + 0.045 * width * 5 + width / 29 * 2;
-			var sop_x = width / 8 * 3 + width / 24 * 2 + 0.045 * width * 7 + width / 29 * 3;
+			var pre_s_l_x = width / 8 * 2 + width / 24 + 0.045 * width * 2;
+			var fre_x = width / 8 * 2 + width / 24*2 + 0.045 * width * 3 + width / 29;
+			var fre_s_l_x = width / 8 * 3 + width / 24 * 2 + 0.045 * width * 4 + width / 29;
+			var sop_x = width / 8 * 3 + width / 24 * 3 + 0.045 * width * 5 + width / 29 * 2;
+
 
 			d3.select("#chart").attr("width", width + 2).attr("height", height).attr("transform", "translate(200, 0)");
 
@@ -304,7 +318,7 @@
 					temp += d3.sum(pre_college[key]) / nums * (height - 25) + 5;
 				}
 
-				drawFeatureBar("act", act_score_nums, act_score_text, pre_act_x, ACT);
+				//drawFeatureBar("act", act_score_nums, act_score_text, pre_act_x, ACT);
 				drawStayOrLeaveBar("fresh", [fre_switch.stay, fre_switch.leave], pre_s_l_x, pre_major_switch);
 
 				/************************************************************************
@@ -338,7 +352,7 @@
 
 				drawStayOrLeaveBar("sopho", [sop_switch.stay, sop_switch.leave], fre_s_l_x, fre_major_switch);
 
-				drawMajorFlowPath();
+				//drawMajorFlowPath();
 				drawLable();
 				tipToolevent();
 			});
@@ -413,9 +427,10 @@
 						return 10;
 
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
-				chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle").attr("class", function(d, index) {
-					return "main-title";
-				});
+				
+				//chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle").attr("class", function(d, index) {
+				//	return "main-title";
+				//});
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -884,14 +899,26 @@
 							return (data[4] + data[5]) / d3.sum(data) * h;
 					}).attr("fill-opacity", function(d, index) {
 						if (getDepartment(college_major_name[i]) == college_name)
-							return 0.8;
+							return 0.7;
 						else
 							return 0.8;
 					}).attr("stroke-width", 0).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", function(d, index) {
-						if (getDepartment(college_major_name[i]) == college_name)
-							return "rgb(153, 204, 255)";
-						else
-							return "rgb(255, 125, 92)";
+						if (getDepartment(college_major_name[i]) == college_name){
+							if(index / 2 < 1)
+								return stay_good_color;
+							else if(index / 2 < 2)
+								return stay_normal_color;
+							else
+								return stay_bad_color;
+						}
+						else{
+							if(index / 2 < 1)
+								return leave_good_color;
+							else if(index / 2 < 2)
+								return leave_normal_color;
+							else
+								return leave_bad_color;
+						}
 					}).on("mouseover", function(d, index) {
 						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
 						$("#d3-tip").show();
@@ -934,6 +961,21 @@
 					else if (index == 3)
 						return (data[4] + data[5]) / nums * (height - 25);
 				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "white");
+
+					
+				/************************************************************************************
+					experiment part
+				*************************************************************************************/	
+				
+				
+				
+				
+				
+				
+				/***
+				 * Text of the mosaic plot
+				 * ****/
+
 
 				var temp = d3.select("#" + id).append("svg").selectAll("text").data(text).enter().append("text").attr("x", function(d, index) {
 					if (index == 0)
@@ -995,7 +1037,19 @@
 							return d;
 					}
 				});
+				
+				
+				
+				
+				
 			}
+
+
+			function drawCollegeMosaicPlot_Gender_limfit(x, y, w, h){
+				
+			}
+
+
 
 			//data is the number of people in each department.
 			function drawMajorTitle(data) {
@@ -1020,7 +1074,8 @@
 				for (var i = 0; i < title.length; i++) {
 
 					mh = 0;
-					d3.select("#majorTitle" + i).append("svg").selectAll("rect").data(title[i]).enter().append("rect").attr("x", 0).attr("y", function(d, index) {
+					d3.select("#majorTitle" + i).append("svg").selectAll("rect").data(title[i]).enter().append("rect").attr("x", 0)
+					.attr("y", function(d, index) {
 						mh += d3.sum(pre_major[d]) / nums * (height - 25);
 						return h + mh - d3.sum(pre_major[d]) / nums * (height - 25);
 					}).attr("class", function(d, index) {
@@ -1032,7 +1087,7 @@
 							return 2;
 						else
 							return d3.sum(pre_major[d]) / nums * (height - 25);
-					}).on("mouseover", function(d, index) {
+					}).on("click", function(d, index) {
 
 						for (key in pre_major) {
 							$("." + getDepartment(key)).hide();
@@ -1051,7 +1106,7 @@
 							d3.select("." + name + "rect").attr("fill", "gray").attr("fill-opacity", 0.1);
 						}
 
-						d3.select(this).attr("fill", "rgb(153, 204, 255)").attr("fill-opacity", 0.8);
+						//d3.select(this).attr("fill", "rgb(153, 204, 255)").attr("fill-opacity", 0.8);
 						d3.select("." + d.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-') + "text").attr("fill", "white");
 
 						$("." + getDepartment(d)).show();
@@ -1064,7 +1119,41 @@
 					}).on("mouseout", function(d, index) {
 						$("#d3-tip").hide();
 					}).attr("width", width / 7.5).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "gray");
-
+	
+					mh = 0;
+					for(k in title[i]){
+						d3.select("#majorTitle" + i).append("svg").selectAll("rect").data([1,2,3]).enter().append("rect").attr("display", "none").attr("x", 0)
+						.attr("y", function(d,index){
+							if(index == 0)
+								return h+mh;
+							else if(index == 1)
+								return h+mh + (pre_major[title[i][k]][0] + pre_major[title[i][k]][1])/nums * (height-25);
+							else
+								return h+mh + d3.sum(pre_major[title[i][k]])/nums * (height - 25) - (pre_major[title[i][k]][4] + pre_major[title[i][k]][5])/nums * (height-25);
+							
+						}).attr("class", function(d, index) {
+							name = title[i][k];
+							name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+							return name ;
+						}).attr("height", function(d, index) {
+							if(index == 0)
+								return (pre_major[title[i][k]][0] + pre_major[title[i][k]][1])/nums * (height - 25);
+							if(index == 1)
+								return (pre_major[title[i][k]][2] + pre_major[title[i][k]][3])/nums * (height - 25);
+							else
+								return (pre_major[title[i][k]][4] + pre_major[title[i][k]][5])/nums * (height - 25);
+						}).attr("width",width / 7.5).attr("fill", function(d,index){
+							if(index == 0)
+								return stay_good_color;
+							else if(index == 1)
+								return stay_normal_color;
+							else
+								return stay_bad_color;
+						}).attr("fill-opacity",0.8);
+						mh += d3.sum(pre_major[title[i][k]])/nums * (height - 25);
+					}
+					
+					
 					mh = 0;
 					text = d3.select("#majorTitle" + i).selectAll("text").data(title[i]).enter().append("text").attr("x", width / 15).attr("y", function(d, index) {
 						if (d3.sum(pre_major[d]) / nums * (height - 25) < 1) {
@@ -1087,7 +1176,7 @@
 					}).attr("textLength", function(d, index) {
 						if (d3.select(this).node().getBBox().width > width / 8)
 							return width / 8;
-					}).on("mouseover", function(d, index) {
+					}).on("click", function(d, index) {
 
 						for (key in pre_major) {
 							$("." + getDepartment(key)).hide();
@@ -1105,7 +1194,7 @@
 							d3.select("." + name + "rect").attr("fill", "gray").attr("fill-opacity", 0.1);
 						}
 
-						d3.select("." + d.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-') + "rect").attr("fill", "rgb(153, 204, 255)").attr("fill-opacity", 0.8);
+						//d3.select("." + d.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-') + "rect").attr("fill", "rgb(153, 204, 255)").attr("fill-opacity", 0.8);
 						d3.select(this).attr("fill", "white");
 
 						$("." + getDepartment(d)).show();
@@ -1122,9 +1211,12 @@
 						name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
 						return name + "text";
 					});
+					
+					
 
 					h += 5 + data[i] / nums * (height - 25);
 				}
+
 			}
 
 			//data is the number of people in each feature
@@ -1274,19 +1366,39 @@
 				for (key in MAJOR_SWITCH) {
 					name = key;
 					name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(MAJOR_SWITCH[key]).enter().append("rect").attr("x", x).attr("y", function(d, index) {
-
-						if (index == 0)
-							return (data[0] - d) / nums * height;
-						else
-							return height - d / nums * height;
+					var li_data = [0,0,0,0,0,0];
+					for(k in MAJOR_SWITCH[key])
+						li_data[Math.floor(k/2)] += MAJOR_SWITCH[key][k];
+					
+					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect")
+					.data(li_data).enter().append("rect").attr("x", x).attr("y", function(d, index) {
+						if (index < 3){
+							if(index == 0)
+								return (data[0] - li_data[2] - li_data[1] - li_data[0]) / nums * height;
+							else if(index == 1)
+								return (data[0] - li_data[2] - li_data[1]) / nums * height;
+							else
+								return (data[0] - li_data[2]) / nums * height;
+						}
+						else{
+							if(index == 3)
+								return height - (li_data[3] + li_data[4] + li_data[5]) / nums * height;
+							else if(index == 4)
+								return height - (li_data[4] + li_data[5]) / nums * height;
+							else
+								return height - li_data[5] / nums * height;
+						}	
 					}).attr("width", width / 29).attr("height", function(d, index) {
 						return d / nums * height;
 					}).attr("fill", function(d, index) {
-						if (index == 0)
-							return "rgb(153, 204, 255)";
-						else
-							return "rgb(255, 125, 92)";
+						switch(index){
+							case 0: return stay_good_color;
+							case 1: return stay_normal_color;
+							case 2: return stay_bad_color;
+							case 3: return leave_good_color;
+							case 4: return leave_normal_color;
+							case 5: return leave_bad_color;
+						}
 					}).attr("fill-opacity", function(d, index) {
 						return 0.8;
 					}).attr("stroke-width", 0).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
@@ -1803,45 +1915,45 @@
 					};
 
 					pre_major_switch = {
-						"Agric. & Nat. Res. Cons" : [0, 0],
-						"Architecture" : [0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0],
-						"Arts: Visual & Performing" : [0, 0],
-						"Business" : [0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0],
-						"Communications" : [0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0],
-						"Education" : [0, 0],
-						"Eng. Tech. & Drafting" : [0, 0],
-						"Engineering" : [0, 0],
-						"English & Foreign Lang." : [0, 0],
-						"Health Admin. & Assisting" : [0, 0],
-						"Health Sci. & Techno." : [0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0],
-						"Repair, Production, & Construction" : [0, 0],
-						"Sciences: Biological & Physical" : [0, 0],
-						"Social Sciences & Law" : [0, 0]
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 					};
 
 					fre_major_switch = {
-						"Agric. & Nat. Res. Cons" : [0, 0],
-						"Architecture" : [0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0],
-						"Arts: Visual & Performing" : [0, 0],
-						"Business" : [0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0],
-						"Communications" : [0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0],
-						"Education" : [0, 0],
-						"Eng. Tech. & Drafting" : [0, 0],
-						"Engineering" : [0, 0],
-						"English & Foreign Lang." : [0, 0],
-						"Health Admin. & Assisting" : [0, 0],
-						"Health Sci. & Techno." : [0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0],
-						"Repair, Production, & Construction" : [0, 0],
-						"Sciences: Biological & Physical" : [0, 0],
-						"Social Sciences & Law" : [0, 0]
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 					};
 
 					fre_major = {
@@ -1960,18 +2072,19 @@
 
 					//pre_major switch
 					if (getDepartment(data[i][2]) == getDepartment(data[i][3])) {
-						pre_major_switch[data[i][2]][0] += parseInt(data[i][12]);
+							pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);	
 
 					} else {
-						pre_major_switch[data[i][2]][1] += parseInt(data[i][12]);
+						pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)+6] += parseInt(data[i][12]);
+						
 					}
 
 					//fre_major switch
 					if (getDepartment(data[i][2]) == getDepartment(data[i][3])) {
 						if (getDepartment(data[i][3]) == getDepartment(data[i][4]))
-							fre_major_switch[data[i][3]][0] += parseInt(data[i][12]);
+							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6)] += parseInt(data[i][12]);
 						else
-							fre_major_switch[data[i][3]][1] += parseInt(data[i][12]);
+							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6)+6] += parseInt(data[i][12]);
 					}
 
 					sum += parseInt(data[i][12]);
