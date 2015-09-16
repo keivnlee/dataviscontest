@@ -187,19 +187,19 @@
 		<div id="d3-tip">
 
 		</div>
-		
+
 		<script>
-		/******************************************************
-		 * CONSTANT PARAMETER
-		 *******************************************************/
-		var stay_good_color = "rgb(78,179,211)",
-			stay_normal_color = "rgb(43,140,190)",
-			stay_bad_color = "rgb(8,104,172)",
-			leave_good_color = "rgb(253,208,162)",
-			leave_normal_color = "rgb(253,141,60)",
-			leave_bad_color = "rgb(217,72,1)";
+			/******************************************************
+			 * CONSTANT PARAMETER
+			 *******************************************************/
+			var stay_good_color = "rgb(78,179,211)",
+			    stay_normal_color = "rgb(43,140,190)",
+			    stay_bad_color = "rgb(8,104,172)",
+			    leave_good_color = "rgb(253,208,162)",
+			    leave_normal_color = "rgb(253,141,60)",
+			    leave_bad_color = "rgb(217,72,1)";
 		</script>
-		
+
 		<script>
 			var activeColor;
 
@@ -283,10 +283,9 @@
 			var pre_x = width / 8 + 0.045 * width + width / 24;
 			var pre_act_x = width / 8 * 2 + width / 24 + 0.045 * width * 2;
 			var pre_s_l_x = width / 8 * 2 + width / 24 + 0.045 * width * 2;
-			var fre_x = width / 8 * 2 + width / 24*2 + 0.045 * width * 3 + width / 29;
+			var fre_x = width / 8 * 2 + width / 24 * 2 + 0.045 * width * 3 + width / 29;
 			var fre_s_l_x = width / 8 * 3 + width / 24 * 2 + 0.045 * width * 4 + width / 29;
 			var sop_x = width / 8 * 3 + width / 24 * 3 + 0.045 * width * 5 + width / 29 * 2;
-
 
 			d3.select("#chart").attr("width", width + 2).attr("height", height).attr("transform", "translate(200, 0)");
 
@@ -330,7 +329,7 @@
 					college_major_name.push(key);
 				}
 				for (key in fre_college) {
-					drawCollegeMosaicPlot("fre_major", key, fre_college[key], fre_x, temp, width / 8, d3.sum(fre_college[key]) / nums * (height - 25), college_major_name, fre_college_switch[key]);
+					drawCollegeMosaicPlot_gender_imfit("fre_major", key, fre_college[key], fre_x, temp, width / 8, d3.sum(fre_college[key]) / nums * (height - 25), college_major_name, fre_college_switch[key]);
 					temp += d3.sum(fre_college[key]) / nums * (height - 25) + 5;
 				}
 
@@ -341,7 +340,7 @@
 				temp = 0;
 
 				for (key in sop_college) {
-					drawCollegeMosaicPlot("sop_major", key, sop_college[key], sop_x, temp, width / 8, d3.sum(sop_college[key]) / nums * (height - 25), college_major_name, sop_college_switch[key]);
+					drawCollegeMosaicPlot_gender_imfit("sop_major", key, sop_college[key], sop_x, temp, width / 8, d3.sum(sop_college[key]) / nums * (height - 25), college_major_name, sop_college_switch[key]);
 					temp += d3.sum(sop_college[key]) / nums * (height - 25) + 5;
 				}
 
@@ -427,7 +426,7 @@
 						return 10;
 
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
-				
+
 				//chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle").attr("class", function(d, index) {
 				//	return "main-title";
 				//});
@@ -903,18 +902,17 @@
 						else
 							return 0.8;
 					}).attr("stroke-width", 0).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", function(d, index) {
-						if (getDepartment(college_major_name[i]) == college_name){
-							if(index / 2 < 1)
+						if (getDepartment(college_major_name[i]) == college_name) {
+							if (index / 2 < 1)
 								return stay_good_color;
-							else if(index / 2 < 2)
+							else if (index / 2 < 2)
 								return stay_normal_color;
 							else
 								return stay_bad_color;
-						}
-						else{
-							if(index / 2 < 1)
+						} else {
+							if (index / 2 < 1)
 								return leave_good_color;
-							else if(index / 2 < 2)
+							else if (index / 2 < 2)
 								return leave_normal_color;
 							else
 								return leave_bad_color;
@@ -962,20 +960,13 @@
 						return (data[4] + data[5]) / nums * (height - 25);
 				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "white");
 
-					
 				/************************************************************************************
-					experiment part
-				*************************************************************************************/	
-				
-				
-				
-				
-				
-				
+				 experiment part
+				 *************************************************************************************/
+
 				/***
 				 * Text of the mosaic plot
 				 * ****/
-
 
 				var temp = d3.select("#" + id).append("svg").selectAll("text").data(text).enter().append("text").attr("x", function(d, index) {
 					if (index == 0)
@@ -1037,19 +1028,285 @@
 							return d;
 					}
 				});
-				
-				
-				
-				
-				
+
 			}
 
+			// id			indicate the block to show this plot
+			// college_name			the name of the department
+			// data	the 	female/male, good/moderate/bad percentage of the department.
+			// x			the top left x coordinate of the plot
+			// y			the top left y coordinate of the plot.
+			// w			the width of the plot
+			// h			the height of the plot
+			// major_data	each major data under the college
+			function drawCollegeMosaicPlot_gender_imfit(id, college_name, data, x, y, w, h, college_major_name, data_container) {
 
-			function drawCollegeMosaicPlot_Gender_limfit(x, y, w, h){
-				
+				d3.select("#" + id).append("svg").selectAll("rect").data(data).enter().append("rect").attr("x", function(d, index) {
+					if (index % 2 == 0)
+						return x;
+					else
+						return data[index - 1] / (data[index - 1] + data[index]) * w + x;
+				}).attr("width", function(d, index) {
+					if (index % 2 == 0)
+						return data[index] / (data[index + 1] + data[index]) * w;
+					else
+						return data[index] / (data[index - 1] + data[index]) * w;
+				}).attr("y", function(d, index) {
+					if (index / 2 < 1)
+						return y;
+					else if (index / 2 < 2)
+						return (data[0] + data[1]) / d3.sum(data) * h + y;
+					else
+						return h - (data[4] + data[5]) / d3.sum(data) * h + y;
+				}).attr("height", function(d, index) {
+					if (index / 2 < 1)
+						return (data[0] + data[1]) / d3.sum(data) * h;
+					else if (index / 2 < 2)
+						return (data[2] + data[3]) / d3.sum(data) * h;
+					else
+						return (data[4] + data[5]) / d3.sum(data) * h;
+				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "gray").on("mouseover", function(d, index) {
+					d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 0.2).attr("stroke", "gray");
+					$("#d3-tip").show();
+					d3.select("#d3-tip").html(college_name.split('_').join(' ') + "<br>" + " population:" + d + "<br>" + "% in college:" + (d / d3.sum(data) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
+				}).on("mouseout", function(d, index) {
+					d3.select(this).attr("stroke-width", 1).attr("fill-opacity", 0.1);
+					$("#d3-tip").hide();
+
+				});
+
+				var major_data;
+				var name;
+				var classtype = ["male_good", "female_good", "male_normal", "female_normal", "male_bad", "female_bad"];
+				var cydata;
+				for (var i = 0; i < college_major_name.length; i++) {
+					name = college_major_name[i];
+
+					major_data = [0, 0, 0, 0, 0, 0];
+					for (var k = 0; k < major_data.length; k++) {
+						if (k < 2)
+							major_data[k] = data_container.data[name].good[k] + data_container.data[name].good[k + 2] + data_container.data[name].good[k + 4];
+						else if (k < 4)
+							major_data[k] = data_container.data[name].normal[k % 2] + data_container.data[name].normal[k % 2 + 2] + data_container.data[name].normal[k % 2 + 4];
+						else
+							major_data[k] = data_container.data[name].bad[k % 4] + data_container.data[name].bad[k % 4 + 2] + data_container.data[name].bad[k % 4 + 4];
+					}
+					name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
+					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(major_data).enter().append("rect").attr("x", function(d, index) {
+						if (index % 2 == 0)
+							return x;
+						else
+							return data[index - 1] / (data[index - 1] + data[index]) * w + x;
+					}).attr("width", function(d, index) {
+						if (index % 2 == 0)
+							return d / (data[index + 1] + data[index]) * w;
+						else
+							return d / (data[index - 1] + data[index]) * w;
+					}).attr("y", function(d, index) {
+						if (index / 2 < 1)
+							return y;
+						else if (index / 2 < 2)
+							return (data[0] + data[1]) / d3.sum(data) * h + y;
+						else
+							return h - (data[4] + data[5]) / d3.sum(data) * h + y;
+					}).attr("height", function(d, index) {
+						if (index / 2 < 1)
+							return (data[0] + data[1]) / d3.sum(data) * h;
+						else if (index / 2 < 2)
+							return (data[2] + data[3]) / d3.sum(data) * h;
+						else
+							return (data[4] + data[5]) / d3.sum(data) * h;
+					}).attr("fill-opacity", function(d, index) {
+						if (getDepartment(college_major_name[i]) == college_name)
+							return 0.7;
+						else
+							return 0.8;
+					}).attr("stroke-width", 0).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", function(d, index) {
+						if (getDepartment(college_major_name[i]) == college_name) {
+							if (index / 2 < 1)
+								return stay_good_color;
+							else if (index / 2 < 2)
+								return stay_normal_color;
+							else
+								return stay_bad_color;
+						} else {
+							if (index / 2 < 1)
+								return leave_good_color;
+							else if (index / 2 < 2)
+								return leave_normal_color;
+							else
+								return leave_bad_color;
+						}
+					}).on("mouseover", function(d, index) {
+						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+						$("#d3-tip").show();
+						for (key in pre_major) {
+							if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+								continue;
+							else
+								d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+						}
+
+					}).on("mouseout", function(d, index) {
+						d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+						$("#d3-tip").hide();
+
+					}).on("click", function(d,index){
+						$("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).hide();
+						$("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')+"_"+classtype[index]).show();
+					});
+
+					for (var k = 0; k < classtype.length; k++) {
+						if(k%2 == 0)
+							cydata = [data_container.data[college_major_name[i]].good[k],  0, data_container.data[college_major_name[i]].normal[k], 0, data_container.data[college_major_name[i]].bad[0], 0];
+						else
+							cydata = [0 ,data_container.data[college_major_name[i]].good[k], 0, data_container.data[college_major_name[i]].normal[k], 0, data_container.data[college_major_name[i]].bad[k]];
+							
+						d3.select("#" + id).append("svg").attr("class", name+"_"+classtype[k]).attr("display", "none").selectAll("rect").data(cydata).enter().append("rect").attr("x", function(d, index) {
+							if (index % 2 == 0)
+								return x;
+							else
+								return data[index - 1] / (data[index - 1] + data[index]) * w + x;
+						}).attr("width", function(d, index) {
+							if (index % 2 == 0)
+								return d / (data[index + 1] + data[index]) * w;
+							else
+								return d / (data[index - 1] + data[index]) * w;
+						}).attr("y", function(d, index) {
+							if (index / 2 < 1)
+								return y;
+							else if (index / 2 < 2)
+								return (data[0] + data[1]) / d3.sum(data) * h + y;
+							else
+								return h - (data[4] + data[5]) / d3.sum(data) * h + y;
+						}).attr("height", function(d, index) {
+							if (index / 2 < 1)
+								return (data[0] + data[1]) / d3.sum(data) * h;
+							else if (index / 2 < 2)
+								return (data[2] + data[3]) / d3.sum(data) * h;
+							else
+								return (data[4] + data[5]) / d3.sum(data) * h;
+						}).attr("fill-opacity", function(d, index) {
+							if (getDepartment(college_major_name[i]) == college_name)
+								return 0.7;
+							else
+								return 0.8;
+						}).attr("stroke-width", 0).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", function(d, index) {
+							if (getDepartment(college_major_name[i]) == college_name) {
+								if (index / 2 < 1)
+									return stay_good_color;
+								else if (index / 2 < 2)
+									return stay_normal_color;
+								else
+									return stay_bad_color;
+							} else {
+								if (index / 2 < 1)
+									return leave_good_color;
+								else if (index / 2 < 2)
+									return leave_normal_color;
+								else
+									return leave_bad_color;
+							}
+						});
+					}
+				}
+
+				var text = [college_name + "", "Good", "Normal", "Bad"];
+				d3.select("#" + id).append("svg").selectAll("rect").data(text).enter().append("rect").attr("x", function(d, index) {
+					if (index == 0)
+						return x - width / 8 * 1 / 3;
+					else
+						return x - width / 8 * 1 / 6;
+				}).attr("y", function(d, index) {
+					if (index == 0 || index == 1)
+						return y;
+					else if (index == 2)
+						return y + (data[0] + data[1]) / nums * (height - 25);
+					else
+						return y + (d3.sum(data) - data[4] - data[5]) / nums * (height - 25);
+
+				}).attr("width", width / 8 * 1 / 6).attr("height", function(d, index) {
+					if (index == 0)
+						return d3.sum(data) / nums * (height - 25);
+					else if (index == 1)
+						return (data[0] + data[1]) / nums * (height - 25);
+					else if (index == 2)
+						return (data[2] + data[3]) / nums * (height - 25);
+					else if (index == 3)
+						return (data[4] + data[5]) / nums * (height - 25);
+				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "white");
+
+				/************************************************************************************
+				 experiment part
+				 *************************************************************************************/
+
+				/***
+				 * Text of the mosaic plot
+				 * ****/
+
+				var temp = d3.select("#" + id).append("svg").selectAll("text").data(text).enter().append("text").attr("x", function(d, index) {
+					if (index == 0)
+						return x - width / 8 * 1 / 3 + width / 8 * 1 / 12;
+					else
+						return x - width / 8 * 1 / 6 + width / 8 * 1 / 12;
+				}).attr("class", function(d, index) {
+					if (index == 0)
+						return "college_name";
+					else
+						return "fit";
+				}).attr("y", function(d, index) {
+					if (index == 0)
+						return y + d3.sum(data) / nums * (height - 25) / 2 + 3;
+					else if (index == 1)
+						return y + (data[0] + data[1]) / nums * (height - 25) / 2 + 3;
+					else if (index == 2)
+						return y + (data[0] + data[1]) / nums * (height - 25) + (data[2] + data[3]) / nums * (height - 25) / 2 + 3;
+					else
+						return y + h - (data[4] + data[5]) / nums * (height - 25) / 2 + 2;
+
+				}).text(function(d, index) {
+					d = d.replace(/\s/g, '');
+					return d.split('_').join(' ');
+
+				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").style("writing-mode", "tb").attr("font-size", function(d, index) {
+					if (index == 0)
+						return 10;
+					else
+						return 7;
+				}).attr("textLength", function(d, index) {
+					if (index == 0)
+						if (d3.select(this).node().getBBox().height >= d3.sum(data) / nums * (height - 25))
+							return d3.sum(data) / nums * (height - 25);
+
+				}).attr("alignment-baseline", "middle");
+
+				temp.text(function(d, index) {
+					if (index == 0) {
+						if (d3.select(this).node().getBBox().height > d3.sum(data) / nums * (height - 25))
+							return d.split('_').join(' ');
+						else
+							return d.split('_').join(' ');
+						;
+					} else if (index == 1) {
+						if (d3.select(this).node().getBBox().height > (data[0] + data[1]) / nums * (height - 25))
+							return "G.";
+						else
+							return d;
+					} else if (index == 2) {
+						if (d3.select(this).node().getBBox().height > (data[2] + data[3]) / nums * (height - 25))
+							return "N.";
+						else
+							return d;
+					} else if (index == 3) {
+						if (d3.select(this).node().getBBox().height > (data[4] + data[5]) / nums * (height - 25))
+							return "B.";
+						else
+							return d;
+					}
+				});
+
 			}
-
-
 
 			//data is the number of people in each department.
 			function drawMajorTitle(data) {
@@ -1074,8 +1331,7 @@
 				for (var i = 0; i < title.length; i++) {
 
 					mh = 0;
-					d3.select("#majorTitle" + i).append("svg").selectAll("rect").data(title[i]).enter().append("rect").attr("x", 0)
-					.attr("y", function(d, index) {
+					d3.select("#majorTitle" + i).append("svg").selectAll("rect").data(title[i]).enter().append("rect").attr("x", 0).attr("y", function(d, index) {
 						mh += d3.sum(pre_major[d]) / nums * (height - 25);
 						return h + mh - d3.sum(pre_major[d]) / nums * (height - 25);
 					}).attr("class", function(d, index) {
@@ -1119,41 +1375,39 @@
 					}).on("mouseout", function(d, index) {
 						$("#d3-tip").hide();
 					}).attr("width", width / 7.5).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "gray");
-	
+
 					mh = 0;
-					for(k in title[i]){
-						d3.select("#majorTitle" + i).append("svg").selectAll("rect").data([1,2,3]).enter().append("rect").attr("display", "none").attr("x", 0)
-						.attr("y", function(d,index){
-							if(index == 0)
-								return h+mh;
-							else if(index == 1)
-								return h+mh + (pre_major[title[i][k]][0] + pre_major[title[i][k]][1])/nums * (height-25);
+					for (k in title[i]) {
+						d3.select("#majorTitle" + i).append("svg").selectAll("rect").data([1, 2, 3]).enter().append("rect").attr("display", "none").attr("x", 0).attr("y", function(d, index) {
+							if (index == 0)
+								return h + mh;
+							else if (index == 1)
+								return h + mh + (pre_major[title[i][k]][0] + pre_major[title[i][k]][1]) / nums * (height - 25);
 							else
-								return h+mh + d3.sum(pre_major[title[i][k]])/nums * (height - 25) - (pre_major[title[i][k]][4] + pre_major[title[i][k]][5])/nums * (height-25);
-							
+								return h + mh + d3.sum(pre_major[title[i][k]]) / nums * (height - 25) - (pre_major[title[i][k]][4] + pre_major[title[i][k]][5]) / nums * (height - 25);
+
 						}).attr("class", function(d, index) {
 							name = title[i][k];
 							name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-							return name ;
+							return name;
 						}).attr("height", function(d, index) {
-							if(index == 0)
-								return (pre_major[title[i][k]][0] + pre_major[title[i][k]][1])/nums * (height - 25);
-							if(index == 1)
-								return (pre_major[title[i][k]][2] + pre_major[title[i][k]][3])/nums * (height - 25);
+							if (index == 0)
+								return (pre_major[title[i][k]][0] + pre_major[title[i][k]][1]) / nums * (height - 25);
+							if (index == 1)
+								return (pre_major[title[i][k]][2] + pre_major[title[i][k]][3]) / nums * (height - 25);
 							else
-								return (pre_major[title[i][k]][4] + pre_major[title[i][k]][5])/nums * (height - 25);
-						}).attr("width",width / 7.5).attr("fill", function(d,index){
-							if(index == 0)
+								return (pre_major[title[i][k]][4] + pre_major[title[i][k]][5]) / nums * (height - 25);
+						}).attr("width", width / 7.5).attr("fill", function(d, index) {
+							if (index == 0)
 								return stay_good_color;
-							else if(index == 1)
+							else if (index == 1)
 								return stay_normal_color;
 							else
 								return stay_bad_color;
-						}).attr("fill-opacity",0.8);
-						mh += d3.sum(pre_major[title[i][k]])/nums * (height - 25);
+						}).attr("fill-opacity", 0.8);
+						mh += d3.sum(pre_major[title[i][k]]) / nums * (height - 25);
 					}
-					
-					
+
 					mh = 0;
 					text = d3.select("#majorTitle" + i).selectAll("text").data(title[i]).enter().append("text").attr("x", width / 15).attr("y", function(d, index) {
 						if (d3.sum(pre_major[d]) / nums * (height - 25) < 1) {
@@ -1211,8 +1465,6 @@
 						name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
 						return name + "text";
 					});
-					
-					
 
 					h += 5 + data[i] / nums * (height - 25);
 				}
@@ -1239,19 +1491,19 @@
 				}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
 					d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 0.2).attr("stroke", "gray");
 					$("#d3-tip").show();
-					if(index == 0)
-						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + d+"<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 1)
-						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 2)
-						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 3)
-						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 4)
-						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 5)
-						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					
+					if (index == 0)
+						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + d + "<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 1)
+						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 2)
+						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 3)
+						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 4)
+						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 5)
+						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
 				}).on("mouseout", function(d, index) {
 					d3.select(this).attr("stroke-width", 1).attr("fill-opacity", 0.1);
 					$("#d3-tip").hide();
@@ -1308,19 +1560,19 @@
 						return width / 29;
 				}).attr("alignment-baseline", "middle").on("mouseover", function(d, index) {
 					$("#d3-tip").show();
-					if(index == 0)
-						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + act_score_nums[index]+"<br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 1)
-						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 2)
-						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 3)
-						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 4)
-						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if(index == 5)
-						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					
+					if (index == 0)
+						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + act_score_nums[index] + "<br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 1)
+						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 2)
+						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 3)
+						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 4)
+						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if (index == 5)
+						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
 				}).on("mouseout", function(d, index) {
 					$("#d3-tip").hide();
 
@@ -1352,11 +1604,11 @@
 				}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
 					d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 0.2).attr("stroke", "gray");
 					$("#d3-tip").show();
-					if(index == 0)
-						d3.select("#d3-tip").html("stay" + "<br>" + " population:" + d+"<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					if (index == 0)
+						d3.select("#d3-tip").html("stay" + "<br>" + " population:" + d + "<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
 					else
-						d3.select("#d3-tip").html("leave" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					
+						d3.select("#d3-tip").html("leave" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+
 				}).on("mouseout", function(d, index) {
 					d3.select(this).attr("stroke-width", 1).attr("fill-opacity", 0.1);
 					$("#d3-tip").hide();
@@ -1366,38 +1618,42 @@
 				for (key in MAJOR_SWITCH) {
 					name = key;
 					name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-					var li_data = [0,0,0,0,0,0];
-					for(k in MAJOR_SWITCH[key])
-						li_data[Math.floor(k/2)] += MAJOR_SWITCH[key][k];
-					
-					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect")
-					.data(li_data).enter().append("rect").attr("x", x).attr("y", function(d, index) {
-						if (index < 3){
-							if(index == 0)
+					var li_data = [0, 0, 0, 0, 0, 0];
+					for (k in MAJOR_SWITCH[key])
+					li_data[Math.floor(k / 2)] += MAJOR_SWITCH[key][k];
+
+					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(li_data).enter().append("rect").attr("x", x).attr("y", function(d, index) {
+						if (index < 3) {
+							if (index == 0)
 								return (data[0] - li_data[2] - li_data[1] - li_data[0]) / nums * height;
-							else if(index == 1)
+							else if (index == 1)
 								return (data[0] - li_data[2] - li_data[1]) / nums * height;
 							else
 								return (data[0] - li_data[2]) / nums * height;
-						}
-						else{
-							if(index == 3)
+						} else {
+							if (index == 3)
 								return height - (li_data[3] + li_data[4] + li_data[5]) / nums * height;
-							else if(index == 4)
+							else if (index == 4)
 								return height - (li_data[4] + li_data[5]) / nums * height;
 							else
 								return height - li_data[5] / nums * height;
-						}	
+						}
 					}).attr("width", width / 29).attr("height", function(d, index) {
 						return d / nums * height;
 					}).attr("fill", function(d, index) {
-						switch(index){
-							case 0: return stay_good_color;
-							case 1: return stay_normal_color;
-							case 2: return stay_bad_color;
-							case 3: return leave_good_color;
-							case 4: return leave_normal_color;
-							case 5: return leave_bad_color;
+						switch(index) {
+						case 0:
+							return stay_good_color;
+						case 1:
+							return stay_normal_color;
+						case 2:
+							return stay_bad_color;
+						case 3:
+							return leave_good_color;
+						case 4:
+							return leave_normal_color;
+						case 5:
+							return leave_bad_color;
 						}
 					}).attr("fill-opacity", function(d, index) {
 						return 0.8;
@@ -1611,266 +1867,53 @@
 					"Education_Service" : [0, 0, 0],
 					"Engineering_Tech" : [0, 0, 0],
 					"Science_Math" : [0, 0, 0]
-				}; {
-					fre_health = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+				};
+
+				function majorlist() {
+					this.good = [0, 0, 0, 0, 0, 0];
+					this.normal = [0, 0, 0, 0, 0, 0];
+					this.bad = [0, 0, 0, 0, 0, 0];
+				};
+
+				function collegelist() {
+					this.data = {
+						"Agric. & Nat. Res. Cons" : new majorlist(),
+						"Architecture" : new majorlist(),
+						"Area, Eth. & Multidiscip. Studies" : new majorlist(),
+						"Arts: Visual & Performing" : new majorlist(),
+						"Business" : new majorlist(),
+						"Commun, Fam., & Personal Svcs" : new majorlist(),
+						"Communications" : new majorlist(),
+						"Comp. Sci. & Mathematics" : new majorlist(),
+						"Education" : new majorlist(),
+						"Eng. Tech. & Drafting" : new majorlist(),
+						"Engineering" : new majorlist(),
+						"English & Foreign Lang." : new majorlist(),
+						"Health Admin. & Assisting" : new majorlist(),
+						"Health Sci. & Techno." : new majorlist(),
+						"Philosophy, Religion, & Theology" : new majorlist(),
+						"Repair, Production, & Construction" : new majorlist(),
+						"Sciences: Biological & Physical" : new majorlist(),
+						"Social Sciences & Law" : new majorlist()
 					};
-					fre_business = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					fre_humanity = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					fre_education = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					fre_engineer = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					fre_science = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-				} {
-					sop_health = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					sop_business = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					sop_humanity = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					sop_education = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					sop_engineer = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-					sop_science = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
-					};
-				}
+				};
 
 				fre_college_switch = {
-					"Health" : fre_health,
-					"Business" : fre_business,
-					"Humanities" : fre_humanity,
-					"Education_Service" : fre_education,
-					"Engineering_Tech" : fre_engineer,
-					"Science_Math" : fre_science
+					"Health" : new collegelist(),
+					"Business" : new collegelist(),
+					"Humanities" : new collegelist(),
+					"Education_Service" : new collegelist(),
+					"Engineering_Tech" : new collegelist(),
+					"Science_Math" : new collegelist()
 				};
 
 				sop_college_switch = {
-					"Health" : sop_health,
-					"Business" : sop_business,
-					"Humanities" : sop_humanity,
-					"Education_Service" : sop_education,
-					"Engineering_Tech" : sop_engineer,
-					"Science_Math" : sop_science
+					"Health" : new collegelist(),
+					"Business" : new collegelist(),
+					"Humanities" : new collegelist(),
+					"Education_Service" : new collegelist(),
+					"Engineering_Tech" : new collegelist(),
+					"Science_Math" : new collegelist()
 				}; {
 					pre_major = {
 						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
@@ -2012,9 +2055,24 @@
 				//skip the label line
 				for (var i = 1; i < data.length; i++) {
 
-					fre_college_switch[getDepartment(data[i][3])][data[i][2]][get_gender_imfit(data[i], 6)] += parseInt(data[i][12]);
-					if (getDepartment(data[i][2]) == getDepartment(data[i][3]))
-						sop_college_switch[getDepartment(data[i][4])][data[i][3]][get_gender_imfit(data[i], 7)] += parseInt(data[i][12]);
+					if (data[i][6] == "Good")
+						fre_college_switch[getDepartment(data[i][3])].data[data[i][2]].good[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
+					else if (data[i][6] == "Moderate")
+						fre_college_switch[getDepartment(data[i][3])].data[data[i][2]].normal[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
+					else if (data[i][6] == "Poor")
+						fre_college_switch[getDepartment(data[i][3])].data[data[i][2]].bad[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
+					else
+						throw "Unknow infit";
+					if (getDepartment(data[i][2]) == getDepartment(data[i][3])) {
+						if (data[i][7] == "Good")
+							sop_college_switch[getDepartment(data[i][4])].data[data[i][2]].good[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
+						else if (data[i][7] == "Moderate")
+							sop_college_switch[getDepartment(data[i][4])].data[data[i][2]].normal[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
+						else if (data[i][7] == "Poor")
+							sop_college_switch[getDepartment(data[i][4])].data[data[i][2]].bad[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
+						else
+							throw "Unknow infit";
+					}
 
 					if (data[i][0] == "Male") {
 						if (data[i][5] == "Good") {
@@ -2072,11 +2130,11 @@
 
 					//pre_major switch
 					if (getDepartment(data[i][2]) == getDepartment(data[i][3])) {
-							pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);	
+						pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
 
 					} else {
-						pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)+6] += parseInt(data[i][12]);
-						
+						pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5) + 6] += parseInt(data[i][12]);
+
 					}
 
 					//fre_major switch
@@ -2084,7 +2142,7 @@
 						if (getDepartment(data[i][3]) == getDepartment(data[i][4]))
 							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6)] += parseInt(data[i][12]);
 						else
-							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6)+6] += parseInt(data[i][12]);
+							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6) + 6] += parseInt(data[i][12]);
 					}
 
 					sum += parseInt(data[i][12]);
