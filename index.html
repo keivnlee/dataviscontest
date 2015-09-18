@@ -318,7 +318,7 @@
 					temp += d3.sum(pre_college[key]) / nums * (height - 25) + 5;
 				}
 
-				//drawFeatureBar("act", act_score_nums, act_score_text, pre_act_x, ACT);
+				drawFeatureBar("act", act_score_nums, act_score_text, pre_act_x, ACT);
 				drawStayOrLeaveBar("fresh", [fre_switch.stay, fre_switch.leave], pre_s_l_x, pre_major_switch);
 
 				/************************************************************************
@@ -428,9 +428,9 @@
 
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
 				
-				//chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle").attr("class", function(d, index) {
-				//	return "main-title";
-				//});
+				chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle").attr("class", function(d, index) {
+					return "main-title";
+				});
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -1396,45 +1396,64 @@
 
 				});
 
+			
 				for (key in ACT) {
-					//initial
-					h = 0;
+					
 					h1 = 0;
-					major = [0, 0, 0, 0, 0, 0];
+					h = 0;
 					name = key;
 					name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-					for ( i = 0; i < ACT[key].length; i++) {
-						major[Math.floor(i / 2)] += ACT[key][i];
+					for ( i = 0; i < ACT[key].score.length; i++) {
+						h1 += (act_score_nums[i] / nums * height);
+						
+						major = ACT[key].score[i].stay.concat(ACT[key].score[i].leave);
+						h = d3.sum(major)/nums *height;
+						d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(major).enter().append("rect").attr("width", width / 29).attr("height", function(d, index) {
+							return d / nums * height;
+						}).attr("x", x).attr("y", function(d, index) {
+							h -= (d/nums *height);
+							return h1 - h - (d/nums *height);
+						}).attr("fill", function(d, index) {
+							switch(index) {
+								case 0:
+									return stay_good_color;
+								case 1:
+									return stay_normal_color;
+								case 2:
+									return stay_bad_color;
+								case 3:
+									return leave_good_color;
+								case 4:
+									return leave_normal_color;
+								case 5:
+									return leave_bad_color;
+							}
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).attr("stroke-width", function(d, index) {
+	
+							return 0;
+						}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
+							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							$("#d3-tip").show();
+							for (key in pre_major) {
+								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+									continue;
+								else
+									d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major_switch[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+	
+							}
+						}).on("mouseout", function(d, index) {
+							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+							$("#d3-tip").hide();
+						});
+				
 					}
 
-					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(major).enter().append("rect").attr("width", width / 29).attr("height", function(d, index) {
-						return d / nums * height;
-					}).attr("x", x).attr("y", function(d, index) {
-						h1 += (act_score_nums[index] / nums * height);
-						return h1 - d / nums * height;
-					}).attr("fill", function(d, index) {
-						return "rgb(153, 204, 255)";
-					}).attr("fill-opacity", function(d, index) {
-						return 0.8;
-					}).attr("stroke-width", function(d, index) {
-
-						return 0;
-					}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
-						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-						$("#d3-tip").show();
-						for (key in pre_major) {
-							if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-								continue;
-							else
-								d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major_switch[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
-						}
-					}).on("mouseout", function(d, index) {
-						d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-						$("#d3-tip").hide();
-					});
+					
 				}
 
+				
 				h = 0;
 				d3.select("#" + id).selectAll("text").data(act_score_text).enter().append("text").text(function(d) {
 					return d;
@@ -2030,26 +2049,41 @@
 						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
 						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
 					};
+					
+					function score_population(){
+						this.stay = [0,0,0];
+						this.leave = [0,0,0];
+					}
+					
+					function act_score(){
+						this.score = [new score_population(), 
+									  new score_population(),
+									  new score_population(),
+									  new score_population(),
+									  new score_population(),
+									  new score_population()];
+					}
+					
 
 					ACT = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+						"Agric. & Nat. Res. Cons" : new act_score(),
+						"Architecture" : new act_score(),
+						"Area, Eth. & Multidiscip. Studies" : new act_score(),
+						"Arts: Visual & Performing" : new act_score(),
+						"Business" : new act_score(),
+						"Commun, Fam., & Personal Svcs" : new act_score(),
+						"Communications" : new act_score(),
+						"Comp. Sci. & Mathematics" : new act_score(),
+						"Education" : new act_score(),
+						"Eng. Tech. & Drafting" : new act_score(),
+						"Engineering" : new act_score(),
+						"English & Foreign Lang." : new act_score(),
+						"Health Admin. & Assisting" : new act_score(),
+						"Health Sci. & Techno." : new act_score(),
+						"Philosophy, Religion, & Theology" : new act_score(),
+						"Repair, Production, & Construction" : new act_score(),
+						"Sciences: Biological & Physical" : new act_score(),
+						"Social Sciences & Law" : new act_score()
 					};
 
 					pre_major_switch = {
@@ -2239,11 +2273,22 @@
 
 					//act score and stay and leave status in the first year.
 					actcat[data[i][1]] += parseInt(data[i][12]);
-					if (getDepartment(data[i][2]) == getDepartment(data[i][3]))
-						ACT[data[i][2]][getactIndex(data[i][1]) * 2] += parseInt(data[i][12]);
-					else
-						ACT[data[i][2]][getactIndex(data[i][1]) * 2 + 1] += parseInt(data[i][12]);
-
+					if (data[i][2] == data[i][3] && data[i][2] == data[i][4]){
+						if(data[i][5] == "Good")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].stay[0] += parseInt(data[i][12]);
+						else if(data[i][5] == "Moderate")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].stay[1] += parseInt(data[i][12]);
+						else
+							ACT[data[i][2]].score[getactIndex(data[i][1])].stay[2] += parseInt(data[i][12]);
+					}
+					else{
+						if(data[i][5] == "Good")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].leave[0] += parseInt(data[i][12]);
+						else if(data[i][5] == "Moderate")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].leave[1] += parseInt(data[i][12]);
+						else
+							ACT[data[i][2]].score[getactIndex(data[i][1])].leave[2] += parseInt(data[i][12]);
+					}
 					pre_major_imfit[getDepartment(data[i][2])][getImfit(data[i][5])] += parseInt(data[i][12]);
 					fre_major_imfit[getDepartment(data[i][3])][getImfit(data[i][6])] += parseInt(data[i][12]);
 					sop_major_imfit[getDepartment(data[i][4])][getImfit(data[i][7])] += parseInt(data[i][12]);
