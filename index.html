@@ -187,19 +187,19 @@
 		<div id="d3-tip">
 
 		</div>
-
+		
 		<script>
-			/******************************************************
-			 * CONSTANT PARAMETER
-			 *******************************************************/
-			var stay_good_color = "rgb(78,179,211)",
-			    stay_normal_color = "rgb(43,140,190)",
-			    stay_bad_color = "rgb(8,104,172)",
-			    leave_good_color = "rgb(253,208,162)",
-			    leave_normal_color = "rgb(253,141,60)",
-			    leave_bad_color = "rgb(217,72,1)";
+		/******************************************************
+		 * CONSTANT PARAMETER
+		 *******************************************************/
+		var stay_good_color = "rgb(78,179,211)",
+			stay_normal_color = "rgb(43,140,190)",
+			stay_bad_color = "rgb(8,104,172)",
+			leave_good_color = "rgb(253,208,162)",
+			leave_normal_color = "rgb(253,141,60)",
+			leave_bad_color = "rgb(217,72,1)";
 		</script>
-
+		
 		<script>
 			var activeColor;
 
@@ -281,11 +281,12 @@
 			    height = window.innerHeight - margin.top - margin.bottom;
 
 			var pre_x = width / 8 + 0.045 * width + width / 24;
-			var pre_act_x = width / 8 * 2 + width / 24 + 0.045 * width * 2;
+			var pre_act_x = width / 8 * 4 + width / 24 * 3 + 0.045 * width * 6 + width / 29 * 2;
 			var pre_s_l_x = width / 8 * 2 + width / 24 + 0.045 * width * 2;
-			var fre_x = width / 8 * 2 + width / 24 * 2 + 0.045 * width * 3 + width / 29;
+			var fre_x = width / 8 * 2 + width / 24*2 + 0.045 * width * 3 + width / 29;
 			var fre_s_l_x = width / 8 * 3 + width / 24 * 2 + 0.045 * width * 4 + width / 29;
 			var sop_x = width / 8 * 3 + width / 24 * 3 + 0.045 * width * 5 + width / 29 * 2;
+
 
 			d3.select("#chart").attr("width", width + 2).attr("height", height).attr("transform", "translate(200, 0)");
 
@@ -317,7 +318,7 @@
 					temp += d3.sum(pre_college[key]) / nums * (height - 25) + 5;
 				}
 
-				//drawFeatureBar("act", act_score_nums, act_score_text, pre_act_x, ACT);
+				drawFeatureBar("act", act_score_nums, act_score_text, pre_act_x, ACT);
 				drawStayOrLeaveBar("fresh", [fre_switch.stay, fre_switch.leave], pre_s_l_x, pre_major_switch);
 
 				/************************************************************************
@@ -329,7 +330,7 @@
 					college_major_name.push(key);
 				}
 				for (key in fre_college) {
-					drawCollegeMosaicPlot_gender_imfit("fre_major", key, fre_college[key], fre_x, temp, width / 8, d3.sum(fre_college[key]) / nums * (height - 25), college_major_name, fre_college_switch[key]);
+					drawCollegeMosaicPlot("fre_major", key, fre_college[key], fre_x, temp, width / 8, d3.sum(fre_college[key]) / nums * (height - 25), college_major_name, fre_college_switch[key], fre_college_switch);
 					temp += d3.sum(fre_college[key]) / nums * (height - 25) + 5;
 				}
 
@@ -340,7 +341,7 @@
 				temp = 0;
 
 				for (key in sop_college) {
-					drawCollegeMosaicPlot_gender_imfit("sop_major", key, sop_college[key], sop_x, temp, width / 8, d3.sum(sop_college[key]) / nums * (height - 25), college_major_name, sop_college_switch[key]);
+					drawCollegeMosaicPlot("sop_major", key, sop_college[key], sop_x, temp, width / 8, d3.sum(sop_college[key]) / nums * (height - 25), college_major_name, sop_college_switch[key], sop_college_switch);
 					temp += d3.sum(sop_college[key]) / nums * (height - 25) + 5;
 				}
 
@@ -351,7 +352,7 @@
 
 				drawStayOrLeaveBar("sopho", [sop_switch.stay, sop_switch.leave], fre_s_l_x, fre_major_switch);
 
-				//drawMajorFlowPath();
+				drawMajorFlowPath();
 				drawLable();
 				tipToolevent();
 			});
@@ -426,10 +427,10 @@
 						return 10;
 
 				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle");
-
-				//chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle").attr("class", function(d, index) {
-				//	return "main-title";
-				//});
+				
+				chart.append("svg").append("text").text("ACT").attr("x", act_x_f + width / 2 / 29).attr("y", 10).attr("fill", "black").attr("font-size", 14).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").attr("alignment-baseline", "middle").attr("class", function(d, index) {
+					return "main-title";
+				});
 
 				chart.append("svg").selectAll("path").data([1, 2]).enter().append("path").attr("d", function(d, index) {
 					if (index == 0)
@@ -510,6 +511,7 @@
 
 			function drawMajorFlowPath() {
 				//x coordination of each component
+				var m_x = width/7.5;
 				var p_x = pre_x + width / 8;
 				var f_x = fre_x - width / 24;
 				var f_b = fre_x + width / 8;
@@ -522,8 +524,15 @@
 				var f_s_l_bar_b = f_s_l_bar_f + width / 29;
 
 				var dep_y = 0;
+				var f_dep_y = 0;
+				var s_dep_y = 0;
 				var dep_h = 0;
+				var f_dep_h = 0;
+				var s_dep_h = 0;
+				var my;
 				var dep_sum = 0;
+				var f_dep_sum = 0;
+				var s_dep_sum = 0;
 				var maj_sum;
 				var act_sum;
 				var majors;
@@ -541,285 +550,372 @@
 				});
 				for (key in pre_department) {
 					dep_sum += pre_department[key] / nums * (height - 25);
+					f_dep_sum += fre_department[key] / nums * (height - 25);
+					s_dep_sum += sop_department[key] / nums * (height - 25);
+					
 					dep_y = dep_sum - pre_department[key] / nums * (height - 25);
+					f_dep_y = f_dep_sum - fre_department[key] / nums * (height - 25);
+					s_dep_y = s_dep_sum - sop_department[key] / nums * (height - 25);
+					
 					dep_sum += 5;
-
+					f_dep_sum += 5;
+					s_dep_sum += 5;
+					
+					dep_h = pre_department[key] /nums * (height - 25);
+					f_dep_h = fre_department[key] /nums * (height - 25);
+					s_dep_h = sop_department[key] /nums * (height - 25);
 					//draw major flow
 					maj_sum = 0;
 					majors = department_major_tree[key];
 					for ( i = 0; i < majors.length; i++) {
-
-						//draw flow path from pre major to act score bar
 						data = ACT[majors[i]];
-						act_sum = 0;
-						pathset = [];
-						dep_h = d3.sum(data) / nums * (height - 25);
-						for ( j = 0; j < data.length / 2; j++) {
-							path = "M";
-							maj_sum += dep_h * (data[j * 2] + data[j * 2 + 1]) / d3.sum(data);
-							act_sum += act_value[j] / nums * height;
-							path += p_x + " " + (dep_y + maj_sum - dep_h * (data[j * 2] + data[j * 2 + 1]) / d3.sum(data)) + " L" + act_x_f + " " + (act_sum - (data[j * 2] + data[j * 2 + 1] ) / nums * height) + " L" + act_x_f + " " + (act_sum) + " L" + p_x + " " + (dep_y + maj_sum) + " Z";
-							pathset.push(path);
-						}
 						name = majors[i];
 						name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
-							return pathset[index];
-						}).attr("fill", "rgb(153, 204, 255)").attr("fill-opacity", function(d, index) {
-							return 0.8;
-						}).on("mouseover", function(d, index) {
-							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-							$("#d3-tip").show();
-							for (key in pre_major) {
-								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-									continue;
-								else
-									d3.select("#d3-tip").html(key + "<br>" + " population:" + (ACT[key][index * 2] + ACT[key][index * 2 + 1]) + "<br>" + "% in major:" + ((ACT[key][index * 2] + ACT[key][index * 2 + 1]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + ((ACT[key][index * 2] + ACT[key][index * 2 + 1]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
-							}
-						}).on("mouseout", function(d, index) {
-							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-							$("#d3-tip").hide();
-						});
-						;
-
-						//draw flow path from act score bar to stay or leave bar
-						act_sum = 0;
+						
+						//draw flow path from major category to planned major
+						{my = getMajor_Y_Location(majors[i], pre_department, pre_major);
+						major_h = d3.sum(pre_major[majors[i]])/nums *(height-25);
+						
 						pathset = [];
-						var s_maj_sum = pre_major_switch[majors[i]][0] / nums * height;
-						var l_maj_sum = pre_major_switch[majors[i]][1] / nums * height;
-						for ( j = 0; j < data.length; j++) {
-							path = "M";
-
-							if (j % 2 == 0) {
-								act_sum += act_value[j / 2] / nums * height;
-								path += act_x_b + " " + (act_sum - (data[j] + data[j + 1]) / nums * height) + " L" + p_s_l_bar_f + " " + (fre_switch.stay / nums * height - s_maj_sum) + " L" + p_s_l_bar_f + " " + (fre_switch.stay / nums * height - s_maj_sum + data[j] / nums * height) + " L" + act_x_b + " " + (act_sum - (data[j + 1]) / nums * height);
-								s_maj_sum -= data[j] / nums * height;
-							} else {
-								path += act_x_b + " " + (act_sum - (data[j]) / nums * height) + " L" + p_s_l_bar_f + " " + (height - l_maj_sum) + " L" + p_s_l_bar_f + " " + (height - l_maj_sum + data[j] / nums * height) + " L" + act_x_b + " " + act_sum;
-								l_maj_sum -= data[j] / nums * height;
-							}
-							pathset.push(path);
-						}
-
-						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
-							return pathset[index];
-						}).attr("fill", function(d, index) {
-							if (index % 2 == 0)
-								return "rgb(153, 204, 255)";
-							else
-								return "rgb(255, 125, 92)";
-						}).attr("fill-opacity", function(d, index) {
-							return 0.8;
-						}).on("mouseover", function(d, index) {
-							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-							$("#d3-tip").show();
-							for (key in pre_major) {
-								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-									continue;
-								else
-									d3.select("#d3-tip").html(key + "<br>" + " population:" + ACT[key][index] + "<br>" + "% in major:" + (ACT[key][index] / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (ACT[key][index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
-							}
-						}).on("mouseout", function(d, index) {
-							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-							$("#d3-tip").hide();
-						});
-						;
-
-						//draw flow path from stay or leave bar to fre_major
-						pathset = [];
-
-						//stay path
 						path = "M";
-						path += p_s_l_bar_b + " " + (fre_switch.stay / nums * height - pre_major_switch[majors[i]][0] / nums * height) + " L" + f_x + " " + getMajor_Y_Location(majors[i], fre_department, fre_major) + " L" + f_x + " " + (getMajor_Y_Location(majors[i], fre_department, fre_major) + d3.sum(fre_college_switch[key][majors[i]]) / nums * (height - 25)) + " L" + p_s_l_bar_b + " " + (fre_switch.stay / nums * height) + " Z";
+						path += m_x + " " + my + " L" +  (pre_x - width/24) + " " + (dep_y + dep_h - major_h) + " L" + (pre_x-width/24) + " "+(dep_y + dep_h- major_h +(pre_major[majors[i]][0] + pre_major[majors[i]][1])/nums * (height-25)) + " L" + m_x + " "+ (my + (pre_major[majors[i]][0] + pre_major[majors[i]][1])/nums * (height-25))+"Z";
 						pathset.push(path);
+						path = "M";
+						path += m_x + " " + (my + (pre_major[majors[i]][0] + pre_major[majors[i]][1])/nums * (height-25)) + " L" +  (pre_x - width/24) + " " + (dep_y + dep_h - major_h+ (pre_major[majors[i]][0] + pre_major[majors[i]][1])/nums * (height-25)) + " L" + (pre_x-width/24) + " "+(dep_y + dep_h  -(pre_major[majors[i]][4] + pre_major[majors[i]][5])/nums * (height-25)) + " L" + m_x + " "+ (my + (major_h - (pre_major[majors[i]][4] + pre_major[majors[i]][5])/nums * (height-25)))+"Z";
+						pathset.push(path);
+						path = "M";
+						path += m_x + " " + (my+major_h - (pre_major[majors[i]][4] + pre_major[majors[i]][5])/nums * (height-25)) + 
+						" L" +  (pre_x - width/24) + " " + (dep_y + dep_h - ((pre_major[majors[i]][4] + pre_major[majors[i]][5])/nums * (height-25))) + 
+						" L" + (pre_x-width/24) + " "+(dep_y + dep_h) + 
+						" L" + m_x + " "+ (my + major_h)+"Z";
+						pathset.push(path);
+						
 						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
 							return pathset[index];
 						}).attr("fill", function(d, index) {
-							if (index == 0)
-								return "rgb(153, 204, 255)";
+							if(index == 0)
+								return stay_good_color;
+							else if(index == 1)
+								return stay_normal_color;
 							else
-								return "rgb(255, 125, 92)";
+								return stay_bad_color;
 						}).attr("fill-opacity", function(d, index) {
 							return 0.8;
 						}).on("mouseover", function(d, index) {
-							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-							$("#d3-tip").show();
-							for (key in pre_major) {
-								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-									continue;
-								else
-									d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(fre_college_switch[getDepartment(key)][key]) + "<br>" + "% in major:" + (d3.sum(fre_college_switch[getDepartment(key)][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(fre_college_switch[getDepartment(key)][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
-							}
+							
 						}).on("mouseout", function(d, index) {
-							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-							$("#d3-tip").hide();
+							
 						});
+
+						//draw flow path from planned major to fre_major stay or leave bar
+					{
+						
 						pathset = [];
-
-						//leave path
-						var fre_dep_sum = 0;
-						var fre_dep_mar_sum = 0;
-						for (k in department_major_tree) {
+						maj_sum = dep_y;
+						li_data = [0,0,0,0,0,0];
+						for(k in pre_major_switch[majors[i]])
+							li_data[Math.floor(k/2)] += pre_major_switch[majors[i]][k];
+						var stay_sum  = (li_data[0] + li_data[1] + li_data[2])/nums * height;
+						var leave_sum = (li_data[3] + li_data[4] + li_data[5])/nums * height;
+						for(j = 0; j < pre_major[majors[i]].length; j++){
 							path = "M";
-							if (k == getDepartment(majors[i])) {
-								fre_dep_sum += fre_department[k] / nums * (height - 25) + 5;
-							} else {
-								var temp = d3.sum(fre_college_switch[k][majors[i]]) / nums * height;
-								fre_dep_mar_sum += temp;
-								path += p_s_l_bar_b + " " + (height - pre_major_switch[majors[i]][1] / nums * height + fre_dep_mar_sum - temp) + " L" + f_x + " " + fre_dep_sum + " L" + f_x + " " + (fre_dep_sum + temp) + " L" + p_s_l_bar_b + " " + (height - pre_major_switch[majors[i]][1] / nums * height + fre_dep_mar_sum) + " Z";
-								pathset.push(path);
-								fre_dep_sum += fre_department[k] / nums * (height - 25) + 5;
+							if(j % 2 ==0){
+								path += p_x + " " + maj_sum + 
+								" L"+ p_s_l_bar_f + " "+ (fre_switch['stay']/nums*height - stay_sum);
+								stay_sum -= (li_data[Math.floor(j/2)]/nums*height );
+								path += " L"+ p_s_l_bar_f + " "+ (fre_switch['stay']/nums*height - stay_sum)+
+								" L"+p_x + " " + (maj_sum +li_data[Math.floor(j/2)]/nums*height ) + " Z";
+							}else{
+								path += p_x + " " + (maj_sum + li_data[Math.floor(j/2)]/nums*height) + 
+								" L"+ p_s_l_bar_f + " "+ (height - leave_sum);
+								if(j == 1)
+									leave_sum -= (li_data[3]/nums*height);
+								else if(j == 3)
+									leave_sum -= (li_data[4]/nums*height);
+								else
+									leave_sum -= (li_data[5]/nums*height);
+								path += " L"+ p_s_l_bar_f + " "+ (height - leave_sum)+
+								" L"+p_x + " " + (maj_sum + (li_data[Math.floor(j/2)]+li_data[j])/nums*height) + " Z";
+								
+								maj_sum += pre_major_imfit[key][Math.floor(j/2)]/nums * (height-25);
 							}
-
+							
+							pathset.push(path);
 						}
-
+						
 						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
 							return pathset[index];
 						}).attr("fill", function(d, index) {
-							return "rgb(255, 125, 92)";
+							switch(index){
+								case 0: return stay_good_color;
+								case 1: return leave_good_color;
+								case 2: return stay_normal_color;
+								case 3: return leave_normal_color;
+								case 4: return stay_bad_color;
+								case 5: return leave_bad_color;
+							}
 						}).attr("fill-opacity", function(d, index) {
 							return 0.8;
 						}).on("mouseover", function(d, index) {
-							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-							$("#d3-tip").show();
-
-							for (key in pre_major) {
-								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-									continue;
-								else {
-									var i = 0;
-									for (; i < department_name.length; i++)
-										if (department_name[i] == getDepartment(key))
-											break;
-									if (index >= i)
-										index++;
-									d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(fre_college_switch[department_name[index]][key]) + "<br>" + "% in major:" + (d3.sum(fre_college_switch[department_name[index]][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(fre_college_switch[department_name[index]][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-								}
-							}
+							
 						}).on("mouseout", function(d, index) {
-							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-							$("#d3-tip").hide();
+							
 						});
-
-						//draw flow path from fre major to sop stay or leave bar.
-						{
-							pathset = [];
-
-							path = "M";
-							path += f_b + " " + getMajor_Y_Location(majors[i], fre_department, fre_major) + " L" + f_s_l_bar_f + " " + (sop_switch.stay - fre_major_switch[majors[i]][0]) / nums * height + " L" + f_s_l_bar_f + " " + sop_switch.stay / nums * height + " L" + f_b + " " + (getMajor_Y_Location(majors[i], fre_department, fre_major) + fre_major_switch[majors[i]][0] / nums * height) + " Z";
-
-							pathset.push(path);
-
-							path = "M";
-							path += f_b + " " + (getMajor_Y_Location(majors[i], fre_department, fre_major) + fre_major_switch[majors[i]][0] / nums * height) + " L" + f_s_l_bar_f + " " + (height - fre_major_switch[majors[i]][1] / nums * height) + " L" + f_s_l_bar_f + " " + height + " L" + f_b + " " + (getMajor_Y_Location(majors[i], fre_department, fre_major) + d3.sum(fre_major_switch[majors[i]]) / nums * height) + " Z";
-							pathset.push(path);
-
-							d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
-								return pathset[index];
-							}).attr("fill", function(d, index) {
-								if (index == 0)
-									return "rgb(153, 204, 255)";
-								else
-									return "rgb(255, 125, 92)";
-							}).attr("fill-opacity", function(d, index) {
-								return 0.8;
-							}).on("mouseover", function(d, index) {
-								d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-							}).on("mouseout", function(d, index) {
-								d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-							});
-							;
-						}
-
-						//draw flow path from stay or leave bar to sop major
-						{
-							//draw flow path from stay or leave bar to fre_major
-							pathset = [];
-
-							//stay path
-							path = "M";
-							path += f_s_l_bar_b + " " + (sop_switch.stay / nums * height - fre_major_switch[majors[i]][0] / nums * height) + " L" + s_x + " " + getMajor_Y_Location(majors[i], sop_department, sop_major) + " L" + s_x + " " + (getMajor_Y_Location(majors[i], sop_department, sop_major) + d3.sum(sop_college_switch[key][majors[i]]) / nums * (height - 25)) + " L" + f_s_l_bar_b + " " + (sop_switch.stay / nums * height) + " Z";
-							pathset.push(path);
-							d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
-								return pathset[index];
-							}).attr("fill", function(d, index) {
-								if (index == 0)
-									return "rgb(153, 204, 255)";
-								else
-									return "rgb(255, 125, 92)";
-							}).attr("fill-opacity", function(d, index) {
-								return 0.8;
-							}).on("mouseover", function(d, index) {
-								d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-								$("#d3-tip").show();
-								for (key in pre_major) {
-									if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-										continue;
-									else
-										d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(sop_college_switch[getDepartment(key)][key]) + "<br>" + "% in major:" + (d3.sum(sop_college_switch[getDepartment(key)][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(sop_college_switch[getDepartment(key)][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-								}
-							}).on("mouseout", function(d, index) {
-								d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-								$("#d3-tip").hide();
-							});
-							pathset = [];
-
-							//leave path
-							var sop_dep_sum = 0;
-							var sop_dep_mar_sum = 0;
-							for (k in department_major_tree) {
-								path = "M";
-								if (k == getDepartment(majors[i])) {
-									sop_dep_sum += sop_department[k] / nums * (height - 25) + 5;
-								} else {
-									var temp = d3.sum(sop_college_switch[k][majors[i]]) / nums * height;
-									sop_dep_mar_sum += temp;
-									path += f_s_l_bar_b + " " + (height - fre_major_switch[majors[i]][1] / nums * height + sop_dep_mar_sum - temp) + " L" + s_x + " " + sop_dep_sum + " L" + s_x + " " + (sop_dep_sum + temp) + " L" + f_s_l_bar_b + " " + (height - fre_major_switch[majors[i]][1] / nums * height + sop_dep_mar_sum) + " Z";
-									pathset.push(path);
-									sop_dep_sum += sop_department[k] / nums * (height - 25) + 5;
-								}
-
-							}
-
-							d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
-								return pathset[index];
-							}).attr("fill", function(d, index) {
-								return "rgb(255, 125, 92)";
-							}).attr("fill-opacity", function(d, index) {
-								return 0.8;
-							}).on("mouseover", function(d, index) {
-								d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-								$("#d3-tip").show();
-
-								for (key in pre_major) {
-									if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-										continue;
-									else {
-										var i = 0;
-										for (; i < department_name.length; i++)
-											if (department_name[i] == getDepartment(key))
-												break;
-										if (index >= i)
-											index++;
-										d3.select("#d3-tip").html(key + "<br>" + " population:" + d3.sum(sop_college_switch[department_name[index]][key]) + "<br>" + "% in major:" + (d3.sum(sop_college_switch[department_name[index]][key]) / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d3.sum(sop_college_switch[department_name[index]][key]) / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-									}
-								}
-							}).on("mouseout", function(d, index) {
-								d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-								$("#d3-tip").hide();
-							});
-							;
 						}
 					}
-
+						
+						//draw flow path from fre_major stay or leave bar to fre_major
+						{
+						//stay path
+						pathset = [];
+						li_data = [0,0,0,0,0,0];
+						for(k in pre_major_switch[majors[i]])
+							li_data[Math.floor(k/2)] += pre_major_switch[majors[i]][k];
+						stay_sum  = (li_data[0] + li_data[1] + li_data[2])/nums * height;
+						
+						for(j = 0; j < 3; j++){
+							path = "M";
+							path += p_s_l_bar_b + " "+(fre_switch['stay']/nums*height -stay_sum)+
+							" L" + f_x + " "+(f_dep_y + f_dep_h -stay_sum);
+							stay_sum -= li_data[j]/nums*height;
+							path +=" L" + f_x + " "+(f_dep_y + f_dep_h -stay_sum)+
+							" L" + p_s_l_bar_b + " "+(fre_switch['stay']/nums*height -stay_sum)+ " Z";
+							pathset.push(path);
+						}
+						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
+							return pathset[index];
+						}).attr("fill", function(d, index) {
+							if(index == 0)
+								return stay_good_color;
+							else if(index == 1)
+								return stay_normal_color;
+							else
+								return stay_bad_color;
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).on("mouseover", function(d, index) {
+							
+						}).on("mouseout", function(d, index) {
+							
+						});
+						
+						//leave path
+						
+						pathset = [];
+						var fre_dep_mar_sum = 0;
+						for(index = 0; index < 6; index++)
+								fre_dep_mar_sum += pre_major_switch[majors[i]][index+6];
+							fre_dep_mar_sum = fre_dep_mar_sum/nums * height;
+						for(j = 0; j < 3; j++){
+							var fre_dep_sum = 0;
+							for(k in department_major_tree){
+								path = "M";
+								if(k == getDepartment(majors[i])){
+									fre_dep_sum += fre_department[k]/nums * (height -25) + 5;
+									continue;
+								}
+								else{
+									var temp = (fre_college_switch[k][majors[i]][j*2] +fre_college_switch[k][majors[i]][j*2+1])/ nums * height;
+									path += p_s_l_bar_b + " " + (height-fre_dep_mar_sum);
+									if(j == 0)
+										path +=" L"+f_x + " " + (fre_dep_sum + fre_department[k]/nums * (height -25) - d3.sum(fre_college_switch[k][majors[i]])/nums * (height -25));
+									else if(j == 1)
+										path +=" L"+f_x + " " + (fre_dep_sum + fre_department[k]/nums * (height -25) - (d3.sum(fre_college_switch[k][majors[i]]) - fre_college_switch[k][majors[i]][0]-fre_college_switch[k][majors[i]][1])/nums * (height -25));
+									else 
+										path +=" L"+f_x + " " + (fre_dep_sum + fre_department[k]/nums * (height -25) - (fre_college_switch[k][majors[i]][4]+fre_college_switch[k][majors[i]][5])/nums * (height -25));
+									
+									fre_dep_mar_sum -= temp;
+									
+									if(j == 0)
+										path +=" L"+f_x + " " + (fre_dep_sum + fre_department[k]/nums * (height -25) - d3.sum(fre_college_switch[k][majors[i]])/nums * (height -25) + temp);
+									else if(j == 1)
+										path +=" L"+f_x + " " + (fre_dep_sum + fre_department[k]/nums * (height -25) - (d3.sum(fre_college_switch[k][majors[i]]) - fre_college_switch[k][majors[i]][0]-fre_college_switch[k][majors[i]][1])/nums * (height -25) + temp);
+									else 
+										path +=" L"+f_x + " " + (fre_dep_sum + fre_department[k]/nums * (height -25) - (fre_college_switch[k][majors[i]][4]+fre_college_switch[k][majors[i]][5])/nums * (height -25) + temp);
+									
+									path +=" L"+p_s_l_bar_b + " " + (height-fre_dep_mar_sum) + " Z"; 
+									fre_dep_sum += fre_department[k]/nums * (height -25) + 5;
+								}
+								pathset.push(path);	
+							}
+						}
+						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
+							return pathset[index];
+						}).attr("fill", function(d, index) {
+								if(Math.floor(index/5)==0)
+									return leave_good_color;
+								else if(Math.floor(index/5) == 1)
+									return leave_normal_color;
+								else
+									return leave_bad_color;
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).on("mouseover", function(d, index) {
+							
+						}).on("mouseout", function(d, index) {
+							
+						});
+					}
+						
+					
+						
+						//draw flow path from fre_major to sop_major stay or leave bar
+						{
+						
+						pathset = [];
+						maj_sum = f_dep_y;
+						var li_data = [0,0,0,0,0,0];
+						for(k in fre_major_switch[majors[i]])
+							li_data[Math.floor(k/2)] += fre_major_switch[majors[i]][k];
+						var stay_sum  = (li_data[0] + li_data[1] + li_data[2])/nums * height;
+						var leave_sum = (li_data[3] + li_data[4] + li_data[5])/nums * height;
+						for(j = 0; j < fre_major[majors[i]].length; j++){
+							path = "M";
+							if(j % 2 ==0){
+								path += f_b + " " + maj_sum + 
+								" L"+ f_s_l_bar_f + " "+ (sop_switch['stay']/nums*height - stay_sum);
+								stay_sum -= (li_data[Math.floor(j/2)]/nums*height );
+								path += " L"+ f_s_l_bar_f + " "+ (sop_switch['stay']/nums*height - stay_sum)+
+								" L"+f_b + " " + (maj_sum +li_data[Math.floor(j/2)]/nums*(height-25) ) + " Z";
+							}else{
+								path += f_b + " " + (maj_sum + li_data[Math.floor(j/2)]/nums*height) + 
+								" L"+ f_s_l_bar_f + " "+ (height - leave_sum);
+								if(j == 1)
+									leave_sum -= (li_data[3]/nums*height);
+								else if(j == 3)
+									leave_sum -= (li_data[4]/nums*height);
+								else
+									leave_sum -= (li_data[5]/nums*height);
+								path += " L"+ f_s_l_bar_f + " "+ (height - leave_sum)+
+								" L"+f_b + " " + (maj_sum + (li_data[Math.floor(j/2)]+li_data[j])/nums*(height-25)) + " Z";
+								
+								maj_sum += (fre_college[key][j] + fre_college[key][j-1] )/nums * (height-25);
+							}
+							
+							pathset.push(path);
+						}
+						
+						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
+							return pathset[index];
+						}).attr("fill", function(d, index) {
+							switch(index){
+								case 0: return stay_good_color;
+								case 1: return leave_good_color;
+								case 2: return stay_normal_color;
+								case 3: return leave_normal_color;
+								case 4: return stay_bad_color;
+								case 5: return leave_bad_color;
+							}
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).on("mouseover", function(d, index) {
+							
+						}).on("mouseout", function(d, index) {
+							
+						});}
+					
+							//draw flow path from sop_major stay or leave bar to sop_major
+						{
+						//stay path
+						pathset = [];
+						li_data = [0,0,0,0,0,0];
+						for(k in fre_major_switch[majors[i]])
+							li_data[Math.floor(k/2)] += fre_major_switch[majors[i]][k];
+						stay_sum  = (li_data[0] + li_data[1] + li_data[2])/nums * (height-25);
+						
+						for(j = 0; j < 3; j++){
+							path = "M";
+							path += f_s_l_bar_b + " "+(sop_switch['stay']/nums*height -stay_sum)+
+							" L" + s_x + " "+(s_dep_y + s_dep_h -stay_sum);
+							stay_sum -= li_data[j]/nums*(height-25);
+							path +=" L" + s_x + " "+(s_dep_y + s_dep_h -stay_sum)+
+							" L" + f_s_l_bar_b + " "+(sop_switch['stay']/nums*height -stay_sum)+ " Z";
+							pathset.push(path);
+						}
+						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
+							return pathset[index];
+						}).attr("fill", function(d, index) {
+							if(index == 0)
+								return stay_good_color;
+							else if(index == 1)
+								return stay_normal_color;
+							else
+								return stay_bad_color;
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).on("mouseover", function(d, index) {
+							
+						}).on("mouseout", function(d, index) {
+							
+						});
+						
+						//leave path	
+						pathset = [];
+						var sop_dep_mar_sum = 0;
+						for(index = 0; index < 6; index++)
+								sop_dep_mar_sum += fre_major_switch[majors[i]][index+6];
+							sop_dep_mar_sum = sop_dep_mar_sum/nums * height;
+						for(j = 0; j < 3; j++){
+							var sop_dep_sum = 0;
+							for(k in department_major_tree){
+								path = "M";
+								if(k == getDepartment(majors[i])){
+									sop_dep_sum += sop_department[k]/nums * (height -25) + 5;
+									continue;
+								}
+								else{
+									var temp = (sop_college_switch[k][majors[i]][j*2] +sop_college_switch[k][majors[i]][j*2+1])/ nums * height;
+									path += f_s_l_bar_b + " " + (height-sop_dep_mar_sum);
+									if(j == 0)
+										path +=" L"+s_x + " " + (sop_dep_sum + sop_department[k]/nums * (height -25) - d3.sum(sop_college_switch[k][majors[i]])/nums * (height -25));
+									else if(j == 1)
+										path +=" L"+s_x + " " + (sop_dep_sum + sop_department[k]/nums * (height -25) - (d3.sum(sop_college_switch[k][majors[i]]) - sop_college_switch[k][majors[i]][0]-sop_college_switch[k][majors[i]][1])/nums * (height -25));
+									else 
+										path +=" L"+s_x + " " + (sop_dep_sum + sop_department[k]/nums * (height -25) - (sop_college_switch[k][majors[i]][4]+sop_college_switch[k][majors[i]][5])/nums * (height -25));
+									
+									sop_dep_mar_sum -= temp;
+									
+									if(j == 0)
+										path +=" L"+s_x + " " + (sop_dep_sum + sop_department[k]/nums * (height -25) - d3.sum(sop_college_switch[k][majors[i]])/nums * (height -25) + temp);
+									else if(j == 1)
+										path +=" L"+s_x + " " + (sop_dep_sum + sop_department[k]/nums * (height -25) - (d3.sum(sop_college_switch[k][majors[i]]) - sop_college_switch[k][majors[i]][0]-sop_college_switch[k][majors[i]][1])/nums * (height -25) + temp);
+									else 
+										path +=" L"+s_x + " " + (sop_dep_sum + sop_department[k]/nums * (height -25) - (sop_college_switch[k][majors[i]][4]+sop_college_switch[k][majors[i]][5])/nums * (height -25) + temp);
+									
+									path +=" L"+f_s_l_bar_b + " " + (height-sop_dep_mar_sum) + " Z"; 
+									sop_dep_sum += sop_department[k]/nums * (height -25) + 5;
+								}
+								pathset.push(path);	
+							}
+						}
+						d3.select("#majorpath").append("svg").attr("class", name).attr("display", "none").selectAll("path").data(pathset).enter().append("path").attr("d", function(d, index) {
+							return pathset[index];
+						}).attr("fill", function(d, index) {
+								if(Math.floor(index/5)==0)
+									return leave_good_color;
+								else if(Math.floor(index/5) == 1)
+									return leave_normal_color;
+								else
+									return leave_bad_color;
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).on("mouseover", function(d, index) {
+							
+						}).on("mouseout", function(d, index) {
+							
+						});
+						}
+					}
+						
+					
+						
+					
 				}
-
 			}
+
+				
+
+			
 
 			// id			indicate the block to show this plot
 			// college_name			the name of the department
@@ -829,7 +925,7 @@
 			// w			the width of the plot
 			// h			the height of the plot
 			// major_data	each major data under the college
-			function drawCollegeMosaicPlot(id, college_name, data, x, y, w, h, college_major_name, data_container) {
+			function drawCollegeMosaicPlot(id, college_name, data, x, y, w, h, college_major_name, data_container, l_s_data) {
 
 				d3.select("#" + id).append("svg").selectAll("rect").data(data).enter().append("rect").attr("x", function(d, index) {
 					if (index % 2 == 0)
@@ -868,6 +964,7 @@
 
 				var major_data;
 				var name;
+				var major_imfit_data;
 				for (var i = 0; i < college_major_name.length; i++) {
 					name = college_major_name[i];
 					major_data = data_container[name];
@@ -902,17 +999,18 @@
 						else
 							return 0.8;
 					}).attr("stroke-width", 0).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", function(d, index) {
-						if (getDepartment(college_major_name[i]) == college_name) {
-							if (index / 2 < 1)
+						if (getDepartment(college_major_name[i]) == college_name){
+							if(index / 2 < 1)
 								return stay_good_color;
-							else if (index / 2 < 2)
+							else if(index / 2 < 2)
 								return stay_normal_color;
 							else
 								return stay_bad_color;
-						} else {
-							if (index / 2 < 1)
+						}
+						else{
+							if(index / 2 < 1)
 								return leave_good_color;
-							else if (index / 2 < 2)
+							else if(index / 2 < 2)
 								return leave_normal_color;
 							else
 								return leave_bad_color;
@@ -933,285 +1031,57 @@
 						$("#d3-tip").hide();
 
 					});
-				}
-
-				var text = [college_name + "", "Good", "Normal", "Bad"];
-				d3.select("#" + id).append("svg").selectAll("rect").data(text).enter().append("rect").attr("x", function(d, index) {
-					if (index == 0)
+					
+					
+					
+					major_imfit_data = [0, 0 ,0];
+					for(var j = 0; j < major_imfit_data.length; j++){
+						major_imfit_data[j] = major_data[j*2]+major_data[j*2+1];
+					}
+					
+					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(major_imfit_data).enter().append("rect").attr("x", function(d, index) {
 						return x - width / 8 * 1 / 3;
-					else
-						return x - width / 8 * 1 / 6;
-				}).attr("y", function(d, index) {
-					if (index == 0 || index == 1)
-						return y;
-					else if (index == 2)
-						return y + (data[0] + data[1]) / nums * (height - 25);
-					else
-						return y + (d3.sum(data) - data[4] - data[5]) / nums * (height - 25);
-
-				}).attr("width", width / 8 * 1 / 6).attr("height", function(d, index) {
-					if (index == 0)
-						return d3.sum(data) / nums * (height - 25);
-					else if (index == 1)
-						return (data[0] + data[1]) / nums * (height - 25);
-					else if (index == 2)
-						return (data[2] + data[3]) / nums * (height - 25);
-					else if (index == 3)
-						return (data[4] + data[5]) / nums * (height - 25);
-				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "white");
-
-				/************************************************************************************
-				 experiment part
-				 *************************************************************************************/
-
-				/***
-				 * Text of the mosaic plot
-				 * ****/
-
-				var temp = d3.select("#" + id).append("svg").selectAll("text").data(text).enter().append("text").attr("x", function(d, index) {
-					if (index == 0)
-						return x - width / 8 * 1 / 3 + width / 8 * 1 / 12;
-					else
-						return x - width / 8 * 1 / 6 + width / 8 * 1 / 12;
-				}).attr("class", function(d, index) {
-					if (index == 0)
-						return "college_name";
-					else
-						return "fit";
-				}).attr("y", function(d, index) {
-					if (index == 0)
-						return y + d3.sum(data) / nums * (height - 25) / 2 + 3;
-					else if (index == 1)
-						return y + (data[0] + data[1]) / nums * (height - 25) / 2 + 3;
-					else if (index == 2)
-						return y + (data[0] + data[1]) / nums * (height - 25) + (data[2] + data[3]) / nums * (height - 25) / 2 + 3;
-					else
-						return y + h - (data[4] + data[5]) / nums * (height - 25) / 2 + 2;
-
-				}).text(function(d, index) {
-					d = d.replace(/\s/g, '');
-					return d.split('_').join(' ');
-
-				}).attr("lengthAdjust", "spacingAndGlyphs").style("text-anchor", " middle").style("writing-mode", "tb").attr("font-size", function(d, index) {
-					if (index == 0)
-						return 10;
-					else
-						return 7;
-				}).attr("textLength", function(d, index) {
-					if (index == 0)
-						if (d3.select(this).node().getBBox().height >= d3.sum(data) / nums * (height - 25))
-							return d3.sum(data) / nums * (height - 25);
-
-				}).attr("alignment-baseline", "middle");
-
-				temp.text(function(d, index) {
-					if (index == 0) {
-						if (d3.select(this).node().getBBox().height > d3.sum(data) / nums * (height - 25))
-							return d.split('_').join(' ');
-						else
-							return d.split('_').join(' ');
-						;
-					} else if (index == 1) {
-						if (d3.select(this).node().getBBox().height > (data[0] + data[1]) / nums * (height - 25))
-							return "G.";
-						else
-							return d;
-					} else if (index == 2) {
-						if (d3.select(this).node().getBBox().height > (data[2] + data[3]) / nums * (height - 25))
-							return "N.";
-						else
-							return d;
-					} else if (index == 3) {
-						if (d3.select(this).node().getBBox().height > (data[4] + data[5]) / nums * (height - 25))
-							return "B.";
-						else
-							return d;
-					}
-				});
-
-			}
-
-			// id			indicate the block to show this plot
-			// college_name			the name of the department
-			// data	the 	female/male, good/moderate/bad percentage of the department.
-			// x			the top left x coordinate of the plot
-			// y			the top left y coordinate of the plot.
-			// w			the width of the plot
-			// h			the height of the plot
-			// major_data	each major data under the college
-			function drawCollegeMosaicPlot_gender_imfit(id, college_name, data, x, y, w, h, college_major_name, data_container) {
-
-				d3.select("#" + id).append("svg").selectAll("rect").data(data).enter().append("rect").attr("x", function(d, index) {
-					if (index % 2 == 0)
-						return x;
-					else
-						return data[index - 1] / (data[index - 1] + data[index]) * w + x;
-				}).attr("width", function(d, index) {
-					if (index % 2 == 0)
-						return data[index] / (data[index + 1] + data[index]) * w;
-					else
-						return data[index] / (data[index - 1] + data[index]) * w;
-				}).attr("y", function(d, index) {
-					if (index / 2 < 1)
-						return y;
-					else if (index / 2 < 2)
-						return (data[0] + data[1]) / d3.sum(data) * h + y;
-					else
-						return h - (data[4] + data[5]) / d3.sum(data) * h + y;
-				}).attr("height", function(d, index) {
-					if (index / 2 < 1)
-						return (data[0] + data[1]) / d3.sum(data) * h;
-					else if (index / 2 < 2)
-						return (data[2] + data[3]) / d3.sum(data) * h;
-					else
-						return (data[4] + data[5]) / d3.sum(data) * h;
-				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "gray").on("mouseover", function(d, index) {
-					d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 0.2).attr("stroke", "gray");
-					$("#d3-tip").show();
-					d3.select("#d3-tip").html(college_name.split('_').join(' ') + "<br>" + " population:" + d + "<br>" + "% in college:" + (d / d3.sum(data) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
-				}).on("mouseout", function(d, index) {
-					d3.select(this).attr("stroke-width", 1).attr("fill-opacity", 0.1);
-					$("#d3-tip").hide();
-
-				});
-
-				var major_data;
-				var name;
-				var classtype = ["male_good", "female_good", "male_normal", "female_normal", "male_bad", "female_bad"];
-				var cydata;
-				for (var i = 0; i < college_major_name.length; i++) {
-					name = college_major_name[i];
-
-					major_data = [0, 0, 0, 0, 0, 0];
-					for (var k = 0; k < major_data.length; k++) {
-						if (k < 2)
-							major_data[k] = data_container.data[name].good[k] + data_container.data[name].good[k + 2] + data_container.data[name].good[k + 4];
-						else if (k < 4)
-							major_data[k] = data_container.data[name].normal[k % 2] + data_container.data[name].normal[k % 2 + 2] + data_container.data[name].normal[k % 2 + 4];
-						else
-							major_data[k] = data_container.data[name].bad[k % 4] + data_container.data[name].bad[k % 4 + 2] + data_container.data[name].bad[k % 4 + 4];
-					}
-					name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(major_data).enter().append("rect").attr("x", function(d, index) {
-						if (index % 2 == 0)
-							return x;
-						else
-							return data[index - 1] / (data[index - 1] + data[index]) * w + x;
 					}).attr("width", function(d, index) {
-						if (index % 2 == 0)
-							return d / (data[index + 1] + data[index]) * w;
-						else
-							return d / (data[index - 1] + data[index]) * w;
+						return width / 8 * 1 / 6;
 					}).attr("y", function(d, index) {
-						if (index / 2 < 1)
-							return y;
-						else if (index / 2 < 2)
-							return (data[0] + data[1]) / d3.sum(data) * h + y;
+						if(index == 0)
+							return y + h - d3.sum(major_imfit_data)/d3.sum(data)*h;
+						else if( index == 1)
+							return y + h - (major_imfit_data[2] + major_imfit_data[1])/d3.sum(data)*h;
 						else
-							return h - (data[4] + data[5]) / d3.sum(data) * h + y;
+							return y + h - d/d3.sum(data)*h;
+							
 					}).attr("height", function(d, index) {
-						if (index / 2 < 1)
-							return (data[0] + data[1]) / d3.sum(data) * h;
-						else if (index / 2 < 2)
-							return (data[2] + data[3]) / d3.sum(data) * h;
-						else
-							return (data[4] + data[5]) / d3.sum(data) * h;
+						return d/ d3.sum(data) * h;
 					}).attr("fill-opacity", function(d, index) {
 						if (getDepartment(college_major_name[i]) == college_name)
 							return 0.7;
 						else
 							return 0.8;
 					}).attr("stroke-width", 0).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", function(d, index) {
-						if (getDepartment(college_major_name[i]) == college_name) {
-							if (index / 2 < 1)
+						if (getDepartment(college_major_name[i]) == college_name){
+							if(index == 0)
 								return stay_good_color;
-							else if (index / 2 < 2)
+							else if(index == 1)
 								return stay_normal_color;
 							else
 								return stay_bad_color;
-						} else {
-							if (index / 2 < 1)
+						}
+						else{
+							if(index == 0)
 								return leave_good_color;
-							else if (index / 2 < 2)
+							else if(index == 1)
 								return leave_normal_color;
 							else
 								return leave_bad_color;
 						}
-					}).on("mouseover", function(d, index) {
-						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-						$("#d3-tip").show();
-						for (key in pre_major) {
-							if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-								continue;
-							else
-								d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-						}
-
-					}).on("mouseout", function(d, index) {
-						d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-						$("#d3-tip").hide();
-
-					}).on("click", function(d,index){
-						$("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).hide();
-						$("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')+"_"+classtype[index]).show();
-					});
-
-					for (var k = 0; k < classtype.length; k++) {
-						if(k%2 == 0)
-							cydata = [data_container.data[college_major_name[i]].good[k],  0, data_container.data[college_major_name[i]].normal[k], 0, data_container.data[college_major_name[i]].bad[0], 0];
-						else
-							cydata = [0 ,data_container.data[college_major_name[i]].good[k], 0, data_container.data[college_major_name[i]].normal[k], 0, data_container.data[college_major_name[i]].bad[k]];
-							
-						d3.select("#" + id).append("svg").attr("class", name+"_"+classtype[k]).attr("display", "none").selectAll("rect").data(cydata).enter().append("rect").attr("x", function(d, index) {
-							if (index % 2 == 0)
-								return x;
-							else
-								return data[index - 1] / (data[index - 1] + data[index]) * w + x;
-						}).attr("width", function(d, index) {
-							if (index % 2 == 0)
-								return d / (data[index + 1] + data[index]) * w;
-							else
-								return d / (data[index - 1] + data[index]) * w;
-						}).attr("y", function(d, index) {
-							if (index / 2 < 1)
-								return y;
-							else if (index / 2 < 2)
-								return (data[0] + data[1]) / d3.sum(data) * h + y;
-							else
-								return h - (data[4] + data[5]) / d3.sum(data) * h + y;
-						}).attr("height", function(d, index) {
-							if (index / 2 < 1)
-								return (data[0] + data[1]) / d3.sum(data) * h;
-							else if (index / 2 < 2)
-								return (data[2] + data[3]) / d3.sum(data) * h;
-							else
-								return (data[4] + data[5]) / d3.sum(data) * h;
-						}).attr("fill-opacity", function(d, index) {
-							if (getDepartment(college_major_name[i]) == college_name)
-								return 0.7;
-							else
-								return 0.8;
-						}).attr("stroke-width", 0).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", function(d, index) {
-							if (getDepartment(college_major_name[i]) == college_name) {
-								if (index / 2 < 1)
-									return stay_good_color;
-								else if (index / 2 < 2)
-									return stay_normal_color;
-								else
-									return stay_bad_color;
-							} else {
-								if (index / 2 < 1)
-									return leave_good_color;
-								else if (index / 2 < 2)
-									return leave_normal_color;
-								else
-									return leave_bad_color;
-							}
-						});
-					}
+					});					
+					
 				}
-
+				
+				/************************************************************************************
+				 * DRAW TEXT BOOK
+				 * ************************************************************************************/
 				var text = [college_name + "", "Good", "Normal", "Bad"];
 				d3.select("#" + id).append("svg").selectAll("rect").data(text).enter().append("rect").attr("x", function(d, index) {
 					if (index == 0)
@@ -1237,13 +1107,20 @@
 						return (data[4] + data[5]) / nums * (height - 25);
 				}).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "white");
 
+					
 				/************************************************************************************
-				 experiment part
-				 *************************************************************************************/
-
+					experiment part
+				*************************************************************************************/	
+				
+				
+				
+				
+				
+				
 				/***
 				 * Text of the mosaic plot
 				 * ****/
+
 
 				var temp = d3.select("#" + id).append("svg").selectAll("text").data(text).enter().append("text").attr("x", function(d, index) {
 					if (index == 0)
@@ -1305,7 +1182,11 @@
 							return d;
 					}
 				});
-
+				
+				
+				
+				
+				
 			}
 
 			//data is the number of people in each department.
@@ -1331,7 +1212,8 @@
 				for (var i = 0; i < title.length; i++) {
 
 					mh = 0;
-					d3.select("#majorTitle" + i).append("svg").selectAll("rect").data(title[i]).enter().append("rect").attr("x", 0).attr("y", function(d, index) {
+					d3.select("#majorTitle" + i).append("svg").selectAll("rect").data(title[i]).enter().append("rect").attr("x", 0)
+					.attr("y", function(d, index) {
 						mh += d3.sum(pre_major[d]) / nums * (height - 25);
 						return h + mh - d3.sum(pre_major[d]) / nums * (height - 25);
 					}).attr("class", function(d, index) {
@@ -1375,39 +1257,41 @@
 					}).on("mouseout", function(d, index) {
 						$("#d3-tip").hide();
 					}).attr("width", width / 7.5).attr("fill-opacity", 0.1).attr("stroke-width", 1).attr("stroke", "gray").attr("stroke-opacity", 0.9).attr("fill", "gray");
-
+	
 					mh = 0;
-					for (k in title[i]) {
-						d3.select("#majorTitle" + i).append("svg").selectAll("rect").data([1, 2, 3]).enter().append("rect").attr("display", "none").attr("x", 0).attr("y", function(d, index) {
-							if (index == 0)
-								return h + mh;
-							else if (index == 1)
-								return h + mh + (pre_major[title[i][k]][0] + pre_major[title[i][k]][1]) / nums * (height - 25);
+					for(k in title[i]){
+						d3.select("#majorTitle" + i).append("svg").selectAll("rect").data([1,2,3]).enter().append("rect").attr("display", "none").attr("x", 0)
+						.attr("y", function(d,index){
+							if(index == 0)
+								return h+mh;
+							else if(index == 1)
+								return h+mh + (pre_major[title[i][k]][0] + pre_major[title[i][k]][1])/nums * (height-25);
 							else
-								return h + mh + d3.sum(pre_major[title[i][k]]) / nums * (height - 25) - (pre_major[title[i][k]][4] + pre_major[title[i][k]][5]) / nums * (height - 25);
-
+								return h+mh + d3.sum(pre_major[title[i][k]])/nums * (height - 25) - (pre_major[title[i][k]][4] + pre_major[title[i][k]][5])/nums * (height-25);
+							
 						}).attr("class", function(d, index) {
 							name = title[i][k];
 							name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-							return name;
+							return name ;
 						}).attr("height", function(d, index) {
-							if (index == 0)
-								return (pre_major[title[i][k]][0] + pre_major[title[i][k]][1]) / nums * (height - 25);
-							if (index == 1)
-								return (pre_major[title[i][k]][2] + pre_major[title[i][k]][3]) / nums * (height - 25);
+							if(index == 0)
+								return (pre_major[title[i][k]][0] + pre_major[title[i][k]][1])/nums * (height - 25);
+							if(index == 1)
+								return (pre_major[title[i][k]][2] + pre_major[title[i][k]][3])/nums * (height - 25);
 							else
-								return (pre_major[title[i][k]][4] + pre_major[title[i][k]][5]) / nums * (height - 25);
-						}).attr("width", width / 7.5).attr("fill", function(d, index) {
-							if (index == 0)
+								return (pre_major[title[i][k]][4] + pre_major[title[i][k]][5])/nums * (height - 25);
+						}).attr("width",width / 7.5).attr("fill", function(d,index){
+							if(index == 0)
 								return stay_good_color;
-							else if (index == 1)
+							else if(index == 1)
 								return stay_normal_color;
 							else
 								return stay_bad_color;
-						}).attr("fill-opacity", 0.8);
-						mh += d3.sum(pre_major[title[i][k]]) / nums * (height - 25);
+						}).attr("fill-opacity",0.8);
+						mh += d3.sum(pre_major[title[i][k]])/nums * (height - 25);
 					}
-
+					
+					
 					mh = 0;
 					text = d3.select("#majorTitle" + i).selectAll("text").data(title[i]).enter().append("text").attr("x", width / 15).attr("y", function(d, index) {
 						if (d3.sum(pre_major[d]) / nums * (height - 25) < 1) {
@@ -1465,6 +1349,8 @@
 						name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
 						return name + "text";
 					});
+					
+					
 
 					h += 5 + data[i] / nums * (height - 25);
 				}
@@ -1491,64 +1377,83 @@
 				}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
 					d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 0.2).attr("stroke", "gray");
 					$("#d3-tip").show();
-					if (index == 0)
-						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + d + "<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 1)
-						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 2)
-						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 3)
-						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 4)
-						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 5)
-						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
+					if(index == 0)
+						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + d+"<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 1)
+						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 2)
+						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 3)
+						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 4)
+						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 5)
+						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					
 				}).on("mouseout", function(d, index) {
 					d3.select(this).attr("stroke-width", 1).attr("fill-opacity", 0.1);
 					$("#d3-tip").hide();
 
 				});
 
+			
 				for (key in ACT) {
-					//initial
-					h = 0;
+					
 					h1 = 0;
-					major = [0, 0, 0, 0, 0, 0];
+					h = 0;
 					name = key;
 					name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-					for ( i = 0; i < ACT[key].length; i++) {
-						major[Math.floor(i / 2)] += ACT[key][i];
+					for ( i = 0; i < ACT[key].score.length; i++) {
+						h1 += (act_score_nums[i] / nums * height);
+						
+						major = ACT[key].score[i].stay.concat(ACT[key].score[i].leave);
+						h = d3.sum(major)/nums *height;
+						d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(major).enter().append("rect").attr("width", width / 29).attr("height", function(d, index) {
+							return d / nums * height;
+						}).attr("x", x).attr("y", function(d, index) {
+							h -= (d/nums *height);
+							return h1 - h - (d/nums *height);
+						}).attr("fill", function(d, index) {
+							switch(index) {
+								case 0:
+									return stay_good_color;
+								case 1:
+									return stay_normal_color;
+								case 2:
+									return stay_bad_color;
+								case 3:
+									return leave_good_color;
+								case 4:
+									return leave_normal_color;
+								case 5:
+									return leave_bad_color;
+							}
+						}).attr("fill-opacity", function(d, index) {
+							return 0.8;
+						}).attr("stroke-width", function(d, index) {
+	
+							return 0;
+						}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
+							d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
+							$("#d3-tip").show();
+							for (key in pre_major) {
+								if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
+									continue;
+								else
+									d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major_switch[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+	
+							}
+						}).on("mouseout", function(d, index) {
+							d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
+							$("#d3-tip").hide();
+						});
+				
 					}
 
-					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(major).enter().append("rect").attr("width", width / 29).attr("height", function(d, index) {
-						return d / nums * height;
-					}).attr("x", x).attr("y", function(d, index) {
-						h1 += (act_score_nums[index] / nums * height);
-						return h1 - d / nums * height;
-					}).attr("fill", function(d, index) {
-						return "rgb(153, 204, 255)";
-					}).attr("fill-opacity", function(d, index) {
-						return 0.8;
-					}).attr("stroke-width", function(d, index) {
-
-						return 0;
-					}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
-						d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 1).attr("stroke", "gray");
-						$("#d3-tip").show();
-						for (key in pre_major) {
-							if ($("." + key.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-')).css("display") == "none")
-								continue;
-							else
-								d3.select("#d3-tip").html(key + "<br>" + " population:" + d + "<br>" + "% in major:" + (d / d3.sum(pre_major_switch[key]) * 100).toFixed(1) + "% <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
-						}
-					}).on("mouseout", function(d, index) {
-						d3.select(this).attr("stroke-width", 0).attr("fill-opacity", 0.8);
-						$("#d3-tip").hide();
-					});
+					
 				}
 
+				
 				h = 0;
 				d3.select("#" + id).selectAll("text").data(act_score_text).enter().append("text").text(function(d) {
 					return d;
@@ -1560,19 +1465,19 @@
 						return width / 29;
 				}).attr("alignment-baseline", "middle").on("mouseover", function(d, index) {
 					$("#d3-tip").show();
-					if (index == 0)
-						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + act_score_nums[index] + "<br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 1)
-						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 2)
-						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 3)
-						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 4)
-						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-					else if (index == 5)
-						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" + act_score_nums[index] + " <br>" + "% in all:" + (act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
+					if(index == 0)
+						d3.select("#d3-tip").html("0-15" + "<br>" + " population:" + act_score_nums[index]+"<br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 1)
+						d3.select("#d3-tip").html("16-19" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 2)
+						d3.select("#d3-tip").html("20-23" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 3)
+						d3.select("#d3-tip").html("24-27" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 4)
+						d3.select("#d3-tip").html("28-32" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					else if(index == 5)
+						d3.select("#d3-tip").html("33-36" + "<br>" + " population:" +  act_score_nums[index]+" <br>" + "% in all:" + ( act_score_nums[index] / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					
 				}).on("mouseout", function(d, index) {
 					$("#d3-tip").hide();
 
@@ -1604,11 +1509,11 @@
 				}).attr("stroke-opacity", 0.9).attr("stroke", "gray").on("mouseover", function(d, index) {
 					d3.select(this).attr("stroke-width", 2).attr("fill-opacity", 0.2).attr("stroke", "gray");
 					$("#d3-tip").show();
-					if (index == 0)
-						d3.select("#d3-tip").html("stay" + "<br>" + " population:" + d + "<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					if(index == 0)
+						d3.select("#d3-tip").html("stay" + "<br>" + " population:" + d+"<br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
 					else
-						d3.select("#d3-tip").html("leave" + "<br>" + " population:" + d + " <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
-
+						d3.select("#d3-tip").html("leave" + "<br>" + " population:" + d+" <br>" + "% in all:" + (d / nums * 100).toFixed(1) + "%").style("left", (d3.event.pageX) + "px").style("top", (d3.event.pageY - 28) + "px");
+					
 				}).on("mouseout", function(d, index) {
 					d3.select(this).attr("stroke-width", 1).attr("fill-opacity", 0.1);
 					$("#d3-tip").hide();
@@ -1618,42 +1523,38 @@
 				for (key in MAJOR_SWITCH) {
 					name = key;
 					name = name.replace(/[^a-z0-9\s]/gi, '').replace(/[_\s]/g, '-');
-					var li_data = [0, 0, 0, 0, 0, 0];
-					for (k in MAJOR_SWITCH[key])
-					li_data[Math.floor(k / 2)] += MAJOR_SWITCH[key][k];
-
-					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect").data(li_data).enter().append("rect").attr("x", x).attr("y", function(d, index) {
-						if (index < 3) {
-							if (index == 0)
+					var li_data = [0,0,0,0,0,0];
+					for(k in MAJOR_SWITCH[key])
+						li_data[Math.floor(k/2)] += MAJOR_SWITCH[key][k];
+					
+					d3.select("#" + id).append("svg").attr("class", name).attr("display", "none").selectAll("rect")
+					.data(li_data).enter().append("rect").attr("x", x).attr("y", function(d, index) {
+						if (index < 3){
+							if(index == 0)
 								return (data[0] - li_data[2] - li_data[1] - li_data[0]) / nums * height;
-							else if (index == 1)
+							else if(index == 1)
 								return (data[0] - li_data[2] - li_data[1]) / nums * height;
 							else
 								return (data[0] - li_data[2]) / nums * height;
-						} else {
-							if (index == 3)
+						}
+						else{
+							if(index == 3)
 								return height - (li_data[3] + li_data[4] + li_data[5]) / nums * height;
-							else if (index == 4)
+							else if(index == 4)
 								return height - (li_data[4] + li_data[5]) / nums * height;
 							else
 								return height - li_data[5] / nums * height;
-						}
+						}	
 					}).attr("width", width / 29).attr("height", function(d, index) {
 						return d / nums * height;
 					}).attr("fill", function(d, index) {
-						switch(index) {
-						case 0:
-							return stay_good_color;
-						case 1:
-							return stay_normal_color;
-						case 2:
-							return stay_bad_color;
-						case 3:
-							return leave_good_color;
-						case 4:
-							return leave_normal_color;
-						case 5:
-							return leave_bad_color;
+						switch(index){
+							case 0: return stay_good_color;
+							case 1: return stay_normal_color;
+							case 2: return stay_bad_color;
+							case 3: return leave_good_color;
+							case 4: return leave_normal_color;
+							case 5: return leave_bad_color;
 						}
 					}).attr("fill-opacity", function(d, index) {
 						return 0.8;
@@ -1867,53 +1768,266 @@
 					"Education_Service" : [0, 0, 0],
 					"Engineering_Tech" : [0, 0, 0],
 					"Science_Math" : [0, 0, 0]
-				};
-
-				function majorlist() {
-					this.good = [0, 0, 0, 0, 0, 0];
-					this.normal = [0, 0, 0, 0, 0, 0];
-					this.bad = [0, 0, 0, 0, 0, 0];
-				};
-
-				function collegelist() {
-					this.data = {
-						"Agric. & Nat. Res. Cons" : new majorlist(),
-						"Architecture" : new majorlist(),
-						"Area, Eth. & Multidiscip. Studies" : new majorlist(),
-						"Arts: Visual & Performing" : new majorlist(),
-						"Business" : new majorlist(),
-						"Commun, Fam., & Personal Svcs" : new majorlist(),
-						"Communications" : new majorlist(),
-						"Comp. Sci. & Mathematics" : new majorlist(),
-						"Education" : new majorlist(),
-						"Eng. Tech. & Drafting" : new majorlist(),
-						"Engineering" : new majorlist(),
-						"English & Foreign Lang." : new majorlist(),
-						"Health Admin. & Assisting" : new majorlist(),
-						"Health Sci. & Techno." : new majorlist(),
-						"Philosophy, Religion, & Theology" : new majorlist(),
-						"Repair, Production, & Construction" : new majorlist(),
-						"Sciences: Biological & Physical" : new majorlist(),
-						"Social Sciences & Law" : new majorlist()
+				}; {
+					fre_health = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
 					};
-				};
+					fre_business = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					fre_humanity = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					fre_education = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					fre_engineer = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					fre_science = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+				} {
+					sop_health = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					sop_business = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					sop_humanity = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					sop_education = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					sop_engineer = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+					sop_science = {
+						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
+						"Architecture" : [0, 0, 0, 0, 0, 0],
+						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0],
+						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0],
+						"Business" : [0, 0, 0, 0, 0, 0],
+						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0],
+						"Communications" : [0, 0, 0, 0, 0, 0],
+						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0],
+						"Education" : [0, 0, 0, 0, 0, 0],
+						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0],
+						"Engineering" : [0, 0, 0, 0, 0, 0],
+						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0],
+						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0],
+						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0],
+						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0],
+						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0],
+						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
+						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
+					};
+				}
 
 				fre_college_switch = {
-					"Health" : new collegelist(),
-					"Business" : new collegelist(),
-					"Humanities" : new collegelist(),
-					"Education_Service" : new collegelist(),
-					"Engineering_Tech" : new collegelist(),
-					"Science_Math" : new collegelist()
+					"Health" : fre_health,
+					"Business" : fre_business,
+					"Humanities" : fre_humanity,
+					"Education_Service" : fre_education,
+					"Engineering_Tech" : fre_engineer,
+					"Science_Math" : fre_science
 				};
 
 				sop_college_switch = {
-					"Health" : new collegelist(),
-					"Business" : new collegelist(),
-					"Humanities" : new collegelist(),
-					"Education_Service" : new collegelist(),
-					"Engineering_Tech" : new collegelist(),
-					"Science_Math" : new collegelist()
+					"Health" : sop_health,
+					"Business" : sop_business,
+					"Humanities" : sop_humanity,
+					"Education_Service" : sop_education,
+					"Engineering_Tech" : sop_engineer,
+					"Science_Math" : sop_science
 				}; {
 					pre_major = {
 						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0],
@@ -1935,26 +2049,41 @@
 						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0],
 						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0]
 					};
+					
+					function score_population(){
+						this.stay = [0,0,0];
+						this.leave = [0,0,0];
+					}
+					
+					function act_score(){
+						this.score = [new score_population(), 
+									  new score_population(),
+									  new score_population(),
+									  new score_population(),
+									  new score_population(),
+									  new score_population()];
+					}
+					
 
 					ACT = {
-						"Agric. & Nat. Res. Cons" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Architecture" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Area, Eth. & Multidiscip. Studies" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Arts: Visual & Performing" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Business" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Commun, Fam., & Personal Svcs" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Communications" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Comp. Sci. & Mathematics" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Education" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Eng. Tech. & Drafting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Engineering" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"English & Foreign Lang." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Health Admin. & Assisting" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Health Sci. & Techno." : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Philosophy, Religion, & Theology" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Repair, Production, & Construction" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Sciences: Biological & Physical" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-						"Social Sciences & Law" : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+						"Agric. & Nat. Res. Cons" : new act_score(),
+						"Architecture" : new act_score(),
+						"Area, Eth. & Multidiscip. Studies" : new act_score(),
+						"Arts: Visual & Performing" : new act_score(),
+						"Business" : new act_score(),
+						"Commun, Fam., & Personal Svcs" : new act_score(),
+						"Communications" : new act_score(),
+						"Comp. Sci. & Mathematics" : new act_score(),
+						"Education" : new act_score(),
+						"Eng. Tech. & Drafting" : new act_score(),
+						"Engineering" : new act_score(),
+						"English & Foreign Lang." : new act_score(),
+						"Health Admin. & Assisting" : new act_score(),
+						"Health Sci. & Techno." : new act_score(),
+						"Philosophy, Religion, & Theology" : new act_score(),
+						"Repair, Production, & Construction" : new act_score(),
+						"Sciences: Biological & Physical" : new act_score(),
+						"Social Sciences & Law" : new act_score()
 					};
 
 					pre_major_switch = {
@@ -2055,24 +2184,9 @@
 				//skip the label line
 				for (var i = 1; i < data.length; i++) {
 
-					if (data[i][6] == "Good")
-						fre_college_switch[getDepartment(data[i][3])].data[data[i][2]].good[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
-					else if (data[i][6] == "Moderate")
-						fre_college_switch[getDepartment(data[i][3])].data[data[i][2]].normal[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
-					else if (data[i][6] == "Poor")
-						fre_college_switch[getDepartment(data[i][3])].data[data[i][2]].bad[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
-					else
-						throw "Unknow infit";
-					if (getDepartment(data[i][2]) == getDepartment(data[i][3])) {
-						if (data[i][7] == "Good")
-							sop_college_switch[getDepartment(data[i][4])].data[data[i][2]].good[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
-						else if (data[i][7] == "Moderate")
-							sop_college_switch[getDepartment(data[i][4])].data[data[i][2]].normal[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
-						else if (data[i][7] == "Poor")
-							sop_college_switch[getDepartment(data[i][4])].data[data[i][2]].bad[get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
-						else
-							throw "Unknow infit";
-					}
+					fre_college_switch[getDepartment(data[i][3])][data[i][2]][get_gender_imfit(data[i], 6)] += parseInt(data[i][12]);
+					if (getDepartment(data[i][2]) == getDepartment(data[i][3]))
+						sop_college_switch[getDepartment(data[i][4])][data[i][3]][get_gender_imfit(data[i], 7)] += parseInt(data[i][12]);
 
 					if (data[i][0] == "Male") {
 						if (data[i][5] == "Good") {
@@ -2130,11 +2244,11 @@
 
 					//pre_major switch
 					if (getDepartment(data[i][2]) == getDepartment(data[i][3])) {
-						pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);
+							pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)] += parseInt(data[i][12]);	
 
 					} else {
-						pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5) + 6] += parseInt(data[i][12]);
-
+						pre_major_switch[data[i][2]][get_gender_imfit(data[i], 5)+6] += parseInt(data[i][12]);
+						
 					}
 
 					//fre_major switch
@@ -2142,7 +2256,7 @@
 						if (getDepartment(data[i][3]) == getDepartment(data[i][4]))
 							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6)] += parseInt(data[i][12]);
 						else
-							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6) + 6] += parseInt(data[i][12]);
+							fre_major_switch[data[i][3]][get_gender_imfit(data[i], 6)+6] += parseInt(data[i][12]);
 					}
 
 					sum += parseInt(data[i][12]);
@@ -2159,11 +2273,22 @@
 
 					//act score and stay and leave status in the first year.
 					actcat[data[i][1]] += parseInt(data[i][12]);
-					if (getDepartment(data[i][2]) == getDepartment(data[i][3]))
-						ACT[data[i][2]][getactIndex(data[i][1]) * 2] += parseInt(data[i][12]);
-					else
-						ACT[data[i][2]][getactIndex(data[i][1]) * 2 + 1] += parseInt(data[i][12]);
-
+					if (data[i][2] == data[i][3] && data[i][2] == data[i][4]){
+						if(data[i][5] == "Good")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].stay[0] += parseInt(data[i][12]);
+						else if(data[i][5] == "Moderate")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].stay[1] += parseInt(data[i][12]);
+						else
+							ACT[data[i][2]].score[getactIndex(data[i][1])].stay[2] += parseInt(data[i][12]);
+					}
+					else{
+						if(data[i][5] == "Good")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].leave[0] += parseInt(data[i][12]);
+						else if(data[i][5] == "Moderate")
+							ACT[data[i][2]].score[getactIndex(data[i][1])].leave[1] += parseInt(data[i][12]);
+						else
+							ACT[data[i][2]].score[getactIndex(data[i][1])].leave[2] += parseInt(data[i][12]);
+					}
 					pre_major_imfit[getDepartment(data[i][2])][getImfit(data[i][5])] += parseInt(data[i][12]);
 					fre_major_imfit[getDepartment(data[i][3])][getImfit(data[i][6])] += parseInt(data[i][12]);
 					sop_major_imfit[getDepartment(data[i][4])][getImfit(data[i][7])] += parseInt(data[i][12]);
