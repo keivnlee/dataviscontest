@@ -393,12 +393,9 @@
 					if (index == 0)
 						return "M" + p_d + " " + 40 + " L" + (p_d + 5) + " " + 35 + " L" + (p_d + 5) + " 45" + " Z";
 					else
-						return "M" + p_x + " " + 40 + " L" + (p_x - 5) + " " + 35 + " L" + (p_x - 5) + " 45" + " Z";
+						return "M" + (p_x - 5)  + " " + 40 + " L" + (p_x - 10) + " " + 35 + " L" + (p_x - 10) + " 45" + " Z";
 				}).attr("fill", function(d, index) {
-					if (index == 0)
-						return "rgb(0,69,41)";
-					else
-						return "rgb(174,1,126)";
+					return "rgb(50,50,50)";
 				});
 
 				chart.append("svg").selectAll("text").data(["Planned Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
@@ -414,7 +411,7 @@
 					else if (index == 1)
 						return p_x - width / 8 * 3 / 4;
 					else
-						return p_x - width / 8 / 4;
+						return p_x - width / 8 / 4 -10;
 				}).attr("y", function(d, index) {
 					if (index == 0)
 						return 10;
@@ -436,15 +433,14 @@
 					if (index == 0)
 						return "M" + f_x + " " + 40 + " L" + (f_x + 5) + " " + 35 + " L" + (f_x + 5) + " 45" + " Z";
 					else
-						return "M" + f_b + " " + 40 + " L" + (f_b - 5) + " " + 35 + " L" + (f_b - 5) + " 45" + " Z";
+						return "M" + (f_b - 5) + " " + 40 + " L" + (f_b - 10) + " " + 35 + " L" + (f_b - 10) + " 45" + " Z";
 				}).attr("fill", function(d, index) {
-					if (index == 0)
-						return "rgb(0,69,41)";
-					else
-						return "rgb(174,1,126)";
+
+						return "rgb(50,50,50)";
+
 				});
 
-				chart.append("svg").selectAll("text").data(["1 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
+				chart.append("svg").selectAll("text").data(["First Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
 				}).attr("class", function(d, index) {
 					if (index == 0)
@@ -453,11 +449,11 @@
 						return "gender-title";
 				}).attr("x", function(d, index) {
 					if (index == 0)
-						return f_b - width / 8 / 2;
+						return f_b - width / 8 / 2 - 5;
 					else if (index == 1)
-						return f_b - width / 8 * 3 / 4;
+						return f_b - width / 8 * 3 / 4 ;
 					else
-						return f_b - width / 8 / 4;
+						return f_b - width / 8 / 4 -10;
 				}).attr("y", function(d, index) {
 					if (index == 0)
 						return 10;
@@ -474,14 +470,11 @@
 					if (index == 0)
 						return "M" + s_x + " " + 40 + " L" + (s_x + 5) + " " + 35 + " L" + (s_x + 5) + " 45" + " Z";
 					else
-						return "M" + (s_b - 2) + " " + 40 + " L" + (s_b - 7) + " " + 35 + " L" + (s_b - 7) + " 45" + " Z";
+						return "M" + (s_b - 5) + " " + 40 + " L" + (s_b - 10) + " " + 35 + " L" + (s_b - 10) + " 45" + " Z";
 				}).attr("fill", function(d, index) {
-					if (index == 0)
-						return "rgb(0,69,41)";
-					else
-						return "rgb(174,1,126)";
+					return "rgb(50,50,50)";
 				});
-				chart.append("svg").selectAll("text").data(["2 Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
+				chart.append("svg").selectAll("text").data(["Second Year Major", "Male", "Female"]).enter().append("text").text(function(d, index) {
 					return d;
 				}).attr("class", function(d, index) {
 					if (index == 0)
@@ -490,11 +483,11 @@
 						return "gender-title";
 				}).attr("x", function(d, index) {
 					if (index == 0)
-						return s_b - width / 8 / 2;
+						return s_b - width / 8 / 2 -5;
 					else if (index == 1)
 						return s_b - width / 8 * 3 / 4;
 					else
-						return s_b - width / 8 / 4;
+						return s_b - width / 8 / 4 -10;
 				}).attr("y", function(d, index) {
 					if (index == 0)
 						return 10;
